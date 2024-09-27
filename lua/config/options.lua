@@ -3,7 +3,7 @@
 -- Add any additional options here
 --
 vim.opt.wrap = true -- bug with treesitter context
-
+vim.o.inccommand = "split"
 vim.opt.guifont = "JetBrains Mono:h13"
 
 --disable default neovim colorshema
@@ -14,6 +14,11 @@ vim.o.wildignore = vim.o.wildignore
 
 vim.opt.clipboard = "unnamedplus"
 vim.wo.relativenumber = false
+
+if vim.loop.os_uname().sysname == "Windows_NT" then
+  LazyVim.terminal.setup("pwsh")
+end
+vim.opt.swapfile = false
 -- local default_options = {
 --    backup = false, -- creates a backup file
 --    clipboard = "unnamedplus", -- allows neovim to access the system clipboard

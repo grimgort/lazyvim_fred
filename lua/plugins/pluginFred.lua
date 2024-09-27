@@ -62,12 +62,12 @@ return {
       require("mini.git").setup()
     end,
   },
-  {
-    "kazhala/close-buffers.nvim",
-  },
-  {
-    "rcarriga/nvim-notify",
-  },
+  -- {
+  --   "kazhala/close-buffers.nvim",
+  -- },
+  -- {
+  --   "rcarriga/nvim-notify",
+  -- },
   {
     "stevearc/conform.nvim",
     opts = function()
@@ -97,7 +97,7 @@ return {
   {
     "nvim-neo-tree/neo-tree.nvim",
     -- branch = "v3.x",
-    version = "3.22",
+    -- version = "3.22",
     dependencies = { "MunifTanjim/nui.nvim", "s1n7ax/nvim-window-picker" },
     cmd = "Neotree",
     init = function()
@@ -249,21 +249,21 @@ return {
       }
     end,
   },
-  {
-    "smoka7/hop.nvim",
-    -- cmd = { "HopWord" },
-    opts = { keys = "etovxqpdygfblzhckisuran" },
-    config = function(_, opts)
-      require("hop").setup(opts)
-    end,
-  },
-  { "nvim-pack/nvim-spectre" },
-  {
-    "noib3/nvim-oxi",
-    config = function()
-      -- require("nvim-oxi").setup()
-    end,
-  },
+  -- {
+  --   "smoka7/hop.nvim",
+  --   -- cmd = { "HopWord" },
+  --   opts = { keys = "etovxqpdygfblzhckisuran" },
+  --   config = function(_, opts)
+  --     require("hop").setup(opts)
+  --   end,
+  -- },
+  -- { "nvim-pack/nvim-spectre" },
+  -- {
+  --   "noib3/nvim-oxi",
+  --   config = function()
+  --     -- require("nvim-oxi").setup()
+  --   end,
+  -- },
   { "vim-scripts/DoxygenToolkit.vim" },
   {
     "shumphrey/fugitive-gitlab.vim",
@@ -321,52 +321,44 @@ return {
   --   vim.cmd("let g:context_enabled = 1")
   --     end,
   --   },
-  {
-    -- big lag with this plugin
-    "nvim-treesitter/nvim-treesitter-context",
-    config = function()
-      require("plugins.config.nvim-treesitter-context")
-    end,
-  },
-  {
-    "skywind3000/asyncrun.vim",
-    enabled = true,
-  },
+  -- {
+  --   -- big lag with this plugin
+  --   "nvim-treesitter/nvim-treesitter-context",
+  --   config = function()
+  --     require("plugins.config.nvim-treesitter-context")
+  --   end,
+  -- },
+  -- {
+  --   "skywind3000/asyncrun.vim",
+  --   enabled = true,
+  -- },
   {
     "HiPhish/rainbow-delimiters.nvim",
     config = function()
       require("plugins.config.nvim-ts-rainbow")
     end,
   },
-  -- {
-  --   "voldikss/vim-translator",
-  --   config = function()
-  --     vim.api.nvim_set_var("translator_target_lang", "fr")
-  --     vim.api.nvim_set_var("translator_source_lang", "en")
-  --     vim.api.nvim_set_var("translator_proxy_url", "http://proxy.onera:80")
-  --   end,
-  -- },
   {
     "uga-rosa/translate.nvim",
     config = function()
       require("translate").setup({})
     end,
   },
-  { "p00f/clangd_extensions.nvim" },
+  -- { "p00f/clangd_extensions.nvim" },
   {
     "rmagatti/goto-preview",
     config = function()
       require("goto-preview").setup({})
     end,
   },
-  {
-    "Civitasv/cmake-tools.nvim",
-    enabled = true,
-    -- event = "VeryLazy",
-    config = function()
-      -- require("plugins.configs.cmakeTool")
-    end,
-  },
+  -- {
+  --   "Civitasv/cmake-tools.nvim",
+  --   enabled = true,
+  --   -- event = "VeryLazy",
+  --   config = function()
+  --     -- require("plugins.configs.cmakeTool")
+  --   end,
+  -- },
   {
     "nvim-telekasten/telekasten.nvim",
     -- event = "VeryLazy",
@@ -383,30 +375,30 @@ return {
       require("plugins.config.neogit")
     end,
   },
-  {
-    "kylechui/nvim-surround",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    -- event = "VeryLazy",
-    config = function()
-      require("nvim-surround").setup({
-        -- Configuration here, or leave empty to use defaults
-      })
-    end,
-  },
+  -- {
+  --   "kylechui/nvim-surround",
+  --   version = "*", -- Use for stability; omit to use `main` branch for the latest features
+  --   -- event = "VeryLazy",
+  --   config = function()
+  --     require("nvim-surround").setup({
+  --       -- Configuration here, or leave empty to use defaults
+  --     })
+  --   end,
+  -- },
   {
     "simnalamburt/vim-mundo",
     event = "BufEnter",
   },
-  {
-    "rhysd/git-messenger.vim",
-    event = "VeryLazy",
-    config = function()
-      -- vim.api.nvim_command 'let g:git_messenger_include_diff="current"'
-      --[[ vim.api.nvim_command("let g:git_messenger_floating_win_opts = { 'border': 'single' }") ]]
-      --[[ vim.api.nvim_command("let g:git_messenger_no_default_mappings=v:true") ]]
-      vim.api.nvim_command("let g:git_messenger_always_into_popup=v:true")
-    end,
-  },
+  -- {
+  --   "rhysd/git-messenger.vim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     -- vim.api.nvim_command 'let g:git_messenger_include_diff="current"'
+  --     --[[ vim.api.nvim_command("let g:git_messenger_floating_win_opts = { 'border': 'single' }") ]]
+  --     --[[ vim.api.nvim_command("let g:git_messenger_no_default_mappings=v:true") ]]
+  --     vim.api.nvim_command("let g:git_messenger_always_into_popup=v:true")
+  --   end,
+  -- },
   { "akinsho/git-conflict.nvim", version = "*", config = true },
   -- {
   --   'tanvirtin/vgit.nvim',
@@ -474,25 +466,25 @@ return {
     event = "BufEnter",
     -- event = "BufRead",
   },
-  {
-    "folke/trouble.nvim",
-    -- dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-  },
+  -- {
+  --   "folke/trouble.nvim",
+  --   -- dependencies = { "nvim-tree/nvim-web-devicons" },
+  --   opts = {
+  --
+  --     -- your configuration comes here
+  --     -- or leave it empty to use the default settings
+  --     -- refer to the configuration section below
+  --   },
+  -- },
   -- { "lunarvim/colorschemes" },
-  {
-    "stevearc/dressing.nvim",
-    config = function()
-      require("dressing").setup({
-        input = { enabled = false },
-      })
-    end,
-  },
+  -- {
+  --   "stevearc/dressing.nvim",
+  --   config = function()
+  --     require("dressing").setup({
+  --       input = { enabled = false },
+  --     })
+  --   end,
+  -- },
 
   -- {
   --     "nvim-neo-tree/neo-tree.nvim",
@@ -504,12 +496,12 @@ return {
   --       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
   --     }
   -- },
-  {
-    "numtostr/FTerm.nvim",
-    config = function()
-      require("plugins.config.fterm")
-    end,
-  },
+  -- {
+  --   "numtostr/FTerm.nvim",
+  --   config = function()
+  --     require("plugins.config.fterm")
+  --   end,
+  -- },
   {
     "cshuaimin/ssr.nvim",
     -- module = "ssr",
@@ -532,16 +524,16 @@ return {
       })
     end,
   },
-  {
-    "roobert/search-replace.nvim",
-    config = function()
-      require("search-replace").setup({
-        -- optionally override defaults
-        default_replace_single_buffer_options = "gcI",
-        default_replace_multi_buffer_options = "egcI",
-      })
-    end,
-  },
+  -- {
+  --   "roobert/search-replace.nvim",
+  --   config = function()
+  --     require("search-replace").setup({
+  --       -- optionally override defaults
+  --       default_replace_single_buffer_options = "gcI",
+  --       default_replace_multi_buffer_options = "egcI",
+  --     })
+  --   end,
+  -- },
   {
     "linrongbin16/colorbox.nvim",
 
@@ -567,21 +559,21 @@ return {
       require("better_escape").setup()
     end,
   },
-  {
-    "drybalka/clean.nvim",
-    config = function()
-      -- require("clean").clean_keymap()
-      require("clean").clean_plugins()
-    end,
-  },
-  {
-    "cbochs/portal.nvim",
-    -- Optional dependencies
-    dependencies = {
-      "cbochs/grapple.nvim",
-      "ThePrimeagen/harpoon",
-    },
-  },
+  -- {
+  --   "drybalka/clean.nvim",
+  --   config = function()
+  --     -- require("clean").clean_keymap()
+  --     require("clean").clean_plugins()
+  --   end,
+  -- },
+  -- {
+  --   "cbochs/portal.nvim",
+  --   -- Optional dependencies
+  --   dependencies = {
+  --     "cbochs/grapple.nvim",
+  --     "ThePrimeagen/harpoon",
+  --   },
+  -- },
   {
     "mpas/marp-nvim",
     config = function()
@@ -599,24 +591,37 @@ return {
       ctest_path = "ctest",
       -- Folder where your compiled executables will be found
       build_folder = "build",
+      dap_config = {
+        type = "cpp",
+        request = "launch",
+        stopAtEntry = true,
+        -- setupCommands = {
+        -- 	{
+        -- 		text = "-enable-pretty-printing",
+        -- 		description = "Enable pretty printing",
+        -- 		ignoreFailures = false,
+        -- 	},
+        -- },
+      },
+      extra_ctest_args = { "-C", "Debug" },
     },
-    config = function()
-      require("ctest-telescope").setup({
-        dap_config = {
-          type = "cpp",
-          request = "launch",
-          stopAtEntry = true,
-          -- setupCommands = {
-          -- 	{
-          -- 		text = "-enable-pretty-printing",
-          -- 		description = "Enable pretty printing",
-          -- 		ignoreFailures = false,
-          -- 	},
-          -- },
-        },
-        extra_ctest_args = { "-C", "Debug" },
-      })
-    end,
+    -- config = function()
+    --   require("ctest-telescope").setup({
+    --     dap_config = {
+    --       type = "cpp",
+    --       request = "launch",
+    --       stopAtEntry = true,
+    --       -- setupCommands = {
+    --       -- 	{
+    --       -- 		text = "-enable-pretty-printing",
+    --       -- 		description = "Enable pretty printing",
+    --       -- 		ignoreFailures = false,
+    --       -- 	},
+    --       -- },
+    --     },
+    --     extra_ctest_args = { "-C", "Debug" },
+    --   })
+    -- end,
   },
   -- {
   --   "nvim-telescope/telescope-project.nvim",
@@ -624,15 +629,15 @@ return {
   --     require("telescope").load_extension("project")
   --   end,
   -- },
-  {
-    "ahmedkhalf/project.nvim",
-    config = function()
-      require("project_nvim").setup({
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      })
-      require("telescope").load_extension("projects")
-    end,
-  },
+  -- {
+  --   "ahmedkhalf/project.nvim",
+  --   config = function()
+  --     require("project_nvim").setup({
+  --       -- your configuration comes here
+  --       -- or leave it empty to use the default settings
+  --       -- refer to the configuration section below
+  --     })
+  --     require("telescope").load_extension("projects")
+  --   end,
+  -- },
 }
