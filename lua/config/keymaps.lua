@@ -31,7 +31,7 @@ vim.keymap.set("n", "<F9>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], {})
 -- vim.keymap.set("n", "<C-!>", ":%s/", opt)
 -- vim.keymap.set("v", "<C-!>", ":s/", opt)
-vim.keymap.set("n", "<S-a>", "GVgg", opt)
+vim.keymap.set("n", "<A-a>", "GVgg", opt)
 -- vim.keymap.set("n","<S-Insert>","<C-R>+",opt)
 -- vim.keymap.set("n", "P", "<cmd>Telescope projects<cr>", opt)
 

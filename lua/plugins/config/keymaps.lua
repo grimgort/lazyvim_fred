@@ -1,110 +1,21 @@
+-- vim.keymap.del
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 --
 --
--- local wk = require("which-key")
--- -- wk.register({ f = {} }, {})
--- local function deregister(prefix, lhs, mode)
---   pcall(wk.register, { [lhs] = "which_key_ignore" }, { prefix = prefix })
---   pcall(vim.api.nvim_del_keymap, mode or "n", prefix .. lhs)
--- end
---
--- deregister("<leader>", "f")
--- <F2> help
--- <F2> vim-codepainter
--- <F3> vim-codepainter navigate
--- vim.g.mapleader = "<space>"
--- vim.keymap.set("n", "<F4>", ":set number! relativenumber!<CR>", { noremap = true, silent = false })
--- vim.keymap.set("n", "<F5>", ":set list! list?<CR>", { noremap = false, silent = false })
-vim.keymap.set("n", "ç", '<CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
-vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
-
---[[ local fterm = require("FTerm") ]]
---[[]]
---[[ local lazygit = fterm:new({ ]]
---[[     ft = 'fterm_lazygit', ]]
---[[     cmd = "lazygit" ]]
---[[ }) ]]
---[[]]
---[[  -- Use this to toggle lazygit in a floating terminal ]]
---[[ vim.keymap.set('n', '<leader>gh', function() ]]
---[[     lazygit:toggle() ]]
---[[ end) ]]
---[[]]
---[[ vim.keymap.set("n", "ç", '<CMD>ToggleTerm<CR>', { noremap = true, silent = true }) ]]
---[[ vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>ToggleTerm<CR>', { noremap = true, silent = true }) ]]
---vim.cmd([[
---nnoremap <silent>ç <Cmd>exe v:count1 . "ToggleTerm"<CR>
---tnoremap <silent>ç <Esc><Cmd>exe v:count1 . "ToggleTerm"<CR>
---]])
-
-vim.keymap.set("n", "<leader>ee", ":NvimTreeToggle<CR>", { noremap = false, silent = true })
-vim.keymap.set("n", "<leader>ef", ":NvimTreeFindFileToggle<CR>", { noremap = false, silent = true })
-
 -- vim.keymap.set("n", "<leader>ee", ":Neotree toggle<CR>", { noremap = false, silent = true })
 -- vim.keymap.set("n", "<leader>ef", ":Neotree toggle reveal<CR>", { noremap = false, silent = true })
-    
 vim.keymap.set("n", "e", ":w<CR>", { noremap = false, silent = true })
--- vim.keymap.set("n", "<F8>", ":MinimapToggle<CR>", { noremap = false, silent = true })
--- vim.keymap.set("n", "<leader>nm", ":Dispatch npm start<CR>", { noremap = false, silent = false })
--- -- Buffers
---[[ vim.keymap.set("n", "<leader>bd", ":BDelete this<CR>", { noremap = false, silent = false }) ]]
--- vim.keymap.set("n", "<leader>bda", ":BDelete! all<CR>", { noremap = false, silent = false })
--- vim.keymap.set("n", "<leader>bdh", ":BDelete! hidden<CR>", { noremap = false, silent = false })
--- vim.keymap.set("n", "<leader>bn", "<Plug>(cokeline-focus-next)", { noremap = false, silent = false })
--- vim.keymap.set("n", "<leader>bp", "<Plug>(cokeline-focus-prev)", { noremap = false, silent = false })
--- -- Git
--- vim.keymap.set("n", "<leader>gf", ":20G<CR>", { noremap = false, silent = false })
--- vim.keymap.set("n", "<leader>gg", ":LazyGit<CR>", { noremap = false, silent = false })
--- -- Ctrlsf
--- vim.keymap.set("n", "<C-F>f", "<Plug>CtrlSFPrompt", { noremap = false, silent = false })
--- vim.keymap.set("v", "<C-F>f", "<Plug>CtrlSFVwordExec", { noremap = false, silent = false })
--- vim.keymap.set("n", "<C-F>n", "<Plug>CtrlSFCwordExec", { noremap = false, silent = false })
--- vim.keymap.set("n", "<C-F>t", ":CtrlSFToggle<CR>", { noremap = true, silent = false })
--- -- Easy-align
--- vim.keymap.set("x", "ga", "<Plug>(EasyAlign)", { noremap = false, silent = false })
--- vim.keymap.set("n", "ga", "<Plug>(EasyAlign)", { noremap = false, silent = false })
--- -- Lightspeed
--- vim.keymap.set("n", "f", "<Plug>Lightspeed_f", { noremap = false, silent = false })
--- vim.keymap.set("n", "F", "<Plug>Lightspeed_F", { noremap = false, silent = false })
--- vim.keymap.set("n", "t", "<Plug>Lightspeed_t", { noremap = false, silent = false })
--- vim.keymap.set("n", "T", "<Plug>Lightspeed_T", { noremap = false, silent = false })
--- -- LSP
--- vim.keymap.set("n", "<space>,", ":lua vim.lsp.diagnostic.goto_prev()<CR>", { noremap = true, silent = true })
--- vim.keymap.set("n", "<space>;", ":lua vim.lsp.diagnostic.goto_next()<CR>", { noremap = true, silent = true })
---[[ vim.keymap.set("n", "ga", ":lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true }) ]]
---[[ vim.keymap.set("n", "ga", ":CodeActionMenu<CR>", { noremap = true, silent = true }) ]]
-vim.keymap.set("n", "gd", ":lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "gl", ":lua vim.lsp.buf.format({async=true})<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "gh", ":lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
--- vim.keymap.set("n", "<space>m", ":lua vim.lsp.buf.rename()<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "gr", ":lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "gs", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "gS", "<cmd>Telescope lsp_document_symbols<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "gk", ":lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
--- -- Telescope
--- vim.keymap.set("n", "<leader>r", ":lua require('telescope.builtin').live_grep()<CR>", { noremap = true, silent = true })
--- vim.keymap.set(
--- 	"n",
--- 	"<leader>#",
--- 	":lua require('telescope.builtin').grep_string()<CR>",
--- 	{ noremap = true, silent = true }
--- )
--- vim.keymap.set("n", "<leader>bb", ":lua require('telescope.builtin').buffers()<CR>", { noremap = true, silent = true })
--- vim.keymap.set(
--- 	"n",
--- 	"<leader>t",
--- 	":lua require('telescope.builtin').treesitter()<CR>",
--- 	{ noremap = true, silent = true }
--- )
--- vim.keymap.set(
--- 	"n",
--- 	"<leader>l",
--- 	":lua require('telescope.builtin').current_buffer_fuzzy_find()<CR>",
--- 	{ noremap = true, silent = true }
--- )
--- vim.keymap.set("n", "<leader>f", "<cmd>Telescope git_files<cr>", { noremap = true, silent = true })
+
+-- vim.keymap.set("n", "gd", ":lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "gl", ":lua vim.lsp.buf.format({async=true})<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "gh", ":lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
+-- -- vim.keymap.set("n", "<space>m", ":lua vim.lsp.buf.rename()<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "gr", ":lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "gs", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "gS", "<cmd>Telescope lsp_document_symbols<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "gk", ":lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>p", "<cmd>Telescope projects<CR>", { noremap = true, silent = true })
 -- vim.keymap.set(
 --   "n",
@@ -613,8 +524,9 @@ vim.keymap.set("n", "<leader>nqs", ":lua require('quicknote').ShowNoteSigns()<cr
 -- vim.keymap.set("n", "<leader>nqls", ":lua require('quicknote').OpenNoteAtCurrentLine()", { desc = "" })
 vim.keymap.set("n", "<leader>nqw", ":lua require('quicknote').ListNotesForCWD()<cr>", { desc = "" })
 
-    local opts = {noremap = true, silent = true, expr = true}
-    vim.keymap.set("n", "<leader>tp", ":lua require('pantran').motion_translate", opts)
-    vim.keymap.set("n", "<leader>to", function() return ":lua require('pantran').motion_translate()" .. "_" end, opts)
-    vim.keymap.set("x", "<leader>tp", ":lua require('pantran').motion_translate", opts)
- 
+local opts = { noremap = true, silent = true, expr = true }
+vim.keymap.set("n", "<leader>tp", ":lua require('pantran').motion_translate", opts)
+vim.keymap.set("n", "<leader>to", function()
+  return ":lua require('pantran').motion_translate()" .. "_"
+end, opts)
+vim.keymap.set("x", "<leader>tp", ":lua require('pantran').motion_translate", opts)
