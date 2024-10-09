@@ -1,5 +1,10 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+vim.keymap.set("n", "<leader>nn", "<cmd>Telekasten find_notes<CR>", { noremap = true, silent = false })
+vim.keymap.set("n", "<leader>nb", "<cmd>Telekasten new_note<CR>", { noremap = true, silent = false })
+
+-- vim.keymap.set("n", "<C-j>", "[", { noremap = true, silent = false })
+-- vim.keymap.set("n", ")", "]", { noremap = true, silent = false })
 --
 --
 vim.keymap.set(
@@ -17,6 +22,28 @@ vim.keymap.set(
 -- )
 
 local opt = {}
+vim.keymap.set("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
+vim.keymap.set("n", "<leader><tab>h", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+vim.keymap.set("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
+vim.keymap.set("n", "<leader><tab>e", "<cmd>tabnew<cr>", { desc = "New Tab" })
+vim.keymap.set("n", "<leader><tab><tab>", "<cmd>tabnext<cr>", { desc = "Next Tab" })
+vim.keymap.set("n", "<leader><tab>b", "<cmd>tabclose<cr>", { desc = "Close Tab" })
+
+vim.keymap.set("n", "<leader>bh", "<cmd>BufferLineCyclePrev<cr>", opt)
+vim.keymap.set("n", "<leader>bl", "<cmd>BufferLineCycleNext<cr>", opt)
+--
+vim.keymap.set("n", "<leader>bH", "<cmd>BufferLineCloseRight<cr>", opt)
+vim.keymap.set("n", "<leader>bL", "<cmd>BufferLineCloseLeft<cr>", opt)
+
+vim.keymap.set("n", "<leader>e", "", { desc = "Neotree" })
+vim.keymap.set("n", "<leader>ee", "<cmd>Neotree toggle<CR>", opt)
+vim.keymap.set("n", "<leader>ef", "<cmd>:Neotree reveal<CR>", opt)
+
+vim.keymap.set("n", "<leader>gj", "<cmd>lua require 'gitsigns'.next_hunk()<cr>", opt)
+vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigns'.prev_hunk()<cr>", opt)
+
+vim.keymap.set("n", "<leader>hj", "<cmd>lua vim.diagnostic.goto_next()<cr>", opt)
+vim.keymap.set("n", "<leader>hk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opt)
 -- vim.keymap.set("n", "<leader>dq", "<cmd>e ./.vscode/launch.json<CR>", { silent = true, noremap = true })
 
 vim.keymap.set("n", "<F8>", ":CMakeBuild <cr>", opt)

@@ -70,17 +70,13 @@ return {
   -- },
   {
     "stevearc/conform.nvim",
-    opts = function()
-      require("conform").setup({
-        formatters_by_ft = {
-          lua = { "stylua" },
-          -- Conform will run multiple formatters sequentially
-          python = { "black" },
-          -- Use a sub-list to run only the first available formatter
-          -- javascript = { { "prettierd", "prettier" } },
-        },
-      })
-    end,
+    opts = {
+      formatters_by_ft = {
+        lua = { "stylua" },
+        fish = { "fish_indent" },
+        sh = { "shfmt" },
+      },
+    },
   },
   -- {
   --   "danymat/neogen",
@@ -592,7 +588,7 @@ return {
       -- Folder where your compiled executables will be found
       build_folder = "build",
       dap_config = {
-        type = "cpp",
+        type = "codelldb",
         request = "launch",
         stopAtEntry = true,
         -- setupCommands = {
@@ -629,15 +625,15 @@ return {
   --     require("telescope").load_extension("project")
   --   end,
   -- },
-  -- {
-  --   "ahmedkhalf/project.nvim",
-  --   config = function()
-  --     require("project_nvim").setup({
-  --       -- your configuration comes here
-  --       -- or leave it empty to use the default settings
-  --       -- refer to the configuration section below
-  --     })
-  --     require("telescope").load_extension("projects")
-  --   end,
-  -- },
+  {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup({
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      })
+      require("telescope").load_extension("projects")
+    end,
+  },
 }
