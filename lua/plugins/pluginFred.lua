@@ -261,15 +261,15 @@ return {
   --   end,
   -- },
   { "vim-scripts/DoxygenToolkit.vim" },
-  {
-    "shumphrey/fugitive-gitlab.vim",
-    config = function()
-      vim.cmd([[
-    let g:fugitive_gitlab_domains = ['https://gitlab.onera.net/']
-    ]])
-    end,
-  },
-  { "tpope/vim-fugitive" },
+  -- {
+  --   "shumphrey/fugitive-gitlab.vim",
+  --   config = function()
+  --     vim.cmd([[
+  --   let g:fugitive_gitlab_domains = ['https://gitlab.onera.net/']
+  --   ]])
+  --   end,
+  -- },
+  -- { "tpope/vim-fugitive" },
   --supportera bientot gitlab pour les issues et MR
   -- {
   --   "pwntester/octo.nvim",
@@ -328,12 +328,12 @@ return {
   --   "skywind3000/asyncrun.vim",
   --   enabled = true,
   -- },
-  {
-    "HiPhish/rainbow-delimiters.nvim",
-    config = function()
-      require("plugins.config.nvim-ts-rainbow")
-    end,
-  },
+  -- {
+  --   "HiPhish/rainbow-delimiters.nvim",
+  --   config = function()
+  --     require("plugins.config.nvim-ts-rainbow")
+  --   end,
+  -- },
   {
     "uga-rosa/translate.nvim",
     config = function()
@@ -381,10 +381,10 @@ return {
   --     })
   --   end,
   -- },
-  {
-    "simnalamburt/vim-mundo",
-    event = "BufEnter",
-  },
+  -- {
+  --   "simnalamburt/vim-mundo",
+  --   event = "BufEnter",
+  -- },
   -- {
   --   "rhysd/git-messenger.vim",
   --   event = "VeryLazy",
@@ -395,7 +395,7 @@ return {
   --     vim.api.nvim_command("let g:git_messenger_always_into_popup=v:true")
   --   end,
   -- },
-  { "akinsho/git-conflict.nvim", version = "*", config = true },
+  -- { "akinsho/git-conflict.nvim", version = "*", config = true }, -- fait grave bug
   -- {
   --   'tanvirtin/vgit.nvim',
   --   dependencies= {
@@ -405,25 +405,25 @@ return {
   -- require('vgit').setup()
   -- 		end,
   --   },
-  {
-    "aaronhallaert/advanced-git-search.nvim",
-    config = function()
-      -- optional: setup telescope before loading the extension
-      require("telescope").setup({
-        -- move this to the place where you call the telescope setup function
-        extensions = {
-          advanced_git_search = {
-            -- See Config
-          },
-        },
-      })
-
-      require("telescope").load_extension("advanced_git_search")
-    end,
-    dependencies = {
-      --- See dependencies
-    },
-  },
+  -- {
+  --   "aaronhallaert/advanced-git-search.nvim",
+  --   config = function()
+  --     -- optional: setup telescope before loading the extension
+  --     require("telescope").setup({
+  --       -- move this to the place where you call the telescope setup function
+  --       extensions = {
+  --         advanced_git_search = {
+  --           -- See Config
+  --         },
+  --       },
+  --     })
+  --
+  --     require("telescope").load_extension("advanced_git_search")
+  --   end,
+  --   dependencies = {
+  --     --- See dependencies
+  --   },
+  -- },
   {
     "xolox/vim-colorscheme-switcher",
     dependencies = { "xolox/vim-misc" },
@@ -448,15 +448,15 @@ return {
   {
     "mzlogin/vim-markdown-toc",
   },
-  {
-    "iamcco/markdown-preview.nvim",
-    event = "BufEnter",
-    build = "cd app && npm install",
-    ft = "markdown",
-    config = function()
-      vim.g.mkdp_auto_start = 1
-    end,
-  },
+  -- {
+  --   "iamcco/markdown-preview.nvim",
+  --   event = "BufEnter",
+  --   build = "cd app && npm install",
+  --   ft = "markdown",
+  --   config = function()
+  --     vim.g.mkdp_auto_start = 1
+  --   end,
+  -- },
   {
     "sindrets/diffview.nvim",
     event = "BufEnter",
@@ -492,12 +492,12 @@ return {
   --       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
   --     }
   -- },
-  -- {
-  --   "numtostr/FTerm.nvim",
-  --   config = function()
-  --     require("plugins.config.fterm")
-  --   end,
-  -- },
+  {
+    "numtostr/FTerm.nvim",
+    config = function()
+      require("plugins.config.fterm")
+    end,
+  },
   {
     "cshuaimin/ssr.nvim",
     -- module = "ssr",
@@ -520,16 +520,6 @@ return {
       })
     end,
   },
-  -- {
-  --   "roobert/search-replace.nvim",
-  --   config = function()
-  --     require("search-replace").setup({
-  --       -- optionally override defaults
-  --       default_replace_single_buffer_options = "gcI",
-  --       default_replace_multi_buffer_options = "egcI",
-  --     })
-  --   end,
-  -- },
   {
     "linrongbin16/colorbox.nvim",
 
@@ -635,5 +625,30 @@ return {
       })
       require("telescope").load_extension("projects")
     end,
+  },
+  {
+    "monaqa/dial.nvim",
+    keys = {
+      { "<C-a>", false },
+    },
+  },
+  { -- This plugin
+    "Zeioth/compiler.nvim",
+    cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
+    dependencies = { "stevearc/overseer.nvim", "nvim-telescope/telescope.nvim" },
+    opts = {},
+  },
+  { -- The task runner we use
+    "stevearc/overseer.nvim",
+    commit = "6271cab7ccc4ca840faa93f54440ffae3a3918bd",
+    cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
+    opts = {
+      task_list = {
+        direction = "bottom",
+        min_height = 25,
+        max_height = 25,
+        default_detail = 1,
+      },
+    },
   },
 }

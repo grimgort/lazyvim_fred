@@ -1,8 +1,39 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+vim.keymap.set("n", "ç", '<CMD>lua require("FTerm").toggle()<CR>')
+vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
+
 vim.keymap.set("n", "<leader>nn", "<cmd>Telekasten find_notes<CR>", { noremap = true, silent = false })
 vim.keymap.set("n", "<leader>nb", "<cmd>Telekasten new_note<CR>", { noremap = true, silent = false })
 
+vim.keymap.set("n", "<A-a>", function()
+  require("dial.map").manipulate("increment", "normal")
+end)
+vim.keymap.set("n", "<A-x>", function()
+  require("dial.map").manipulate("decrement", "normal")
+end)
+vim.keymap.set("n", "g<A-a>", function()
+  require("dial.map").manipulate("increment", "gnormal")
+end)
+vim.keymap.set("n", "g<A-x>", function()
+  require("dial.map").manipulate("decrement", "gnormal")
+end)
+vim.keymap.set("v", "<A-a>", function()
+  require("dial.map").manipulate("increment", "visual")
+end)
+vim.keymap.set("v", "<A-x>", function()
+  require("dial.map").manipulate("decrement", "visual")
+end)
+vim.keymap.set("v", "g<A-a>", function()
+  require("dial.map").manipulate("increment", "gvisual")
+end)
+vim.keymap.set("v", "g<A-x>", function()
+  require("dial.map").manipulate("decrement", "gvisual")
+end)
+
+vim.keymap.set({ "n", "x" }, "<leader>se", function()
+  require("ssr").open()
+end)
 -- vim.keymap.set("n", "<C-j>", "[", { noremap = true, silent = false })
 -- vim.keymap.set("n", ")", "]", { noremap = true, silent = false })
 --
@@ -44,7 +75,8 @@ vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigns'.prev_hunk()<cr>",
 
 vim.keymap.set("n", "<leader>hj", "<cmd>lua vim.diagnostic.goto_next()<cr>", opt)
 vim.keymap.set("n", "<leader>hk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opt)
--- vim.keymap.set("n", "<leader>dq", "<cmd>e ./.vscode/launch.json<CR>", { silent = true, noremap = true })
+
+vim.keymap.set("n", "<leader>dq", "<cmd>e ./.vscode/launch.json<CR>", { silent = true, noremap = true })
 
 vim.keymap.set("n", "<F8>", ":CMakeBuild <cr>", opt)
 vim.keymap.set("n", "<F5>", ":Task start cmake configure<cr>", opt)
@@ -58,7 +90,8 @@ vim.keymap.set("n", "<F9>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], {})
 -- vim.keymap.set("n", "<C-!>", ":%s/", opt)
 -- vim.keymap.set("v", "<C-!>", ":s/", opt)
-vim.keymap.set("n", "<A-a>", "GVgg", opt)
+vim.keymap.set("n", "<C-a>", "GVgg", opt)
+
 -- vim.keymap.set("n","<S-Insert>","<C-R>+",opt)
 -- vim.keymap.set("n", "P", "<cmd>Telescope projects<cr>", opt)
 
@@ -253,7 +286,7 @@ function QuitAllLua()
   vim.cmd("Neotree close")
   -- vim.cmd("SymbolsOutlineClose")
   --[[ vim.cmd("Lspsaga close_floaterm") ]]
-  -- require("FTerm").close()
+  require("FTerm").close()
   --[[ :pclose ]]
   --[[   helpclose ]]
   --[[   ccl ]]
@@ -377,3 +410,22 @@ vim.keymap.set("n", "<F4>", function()
 end, {
   desc = "Debug: Start/Continue",
 })
+--
+-- dap.configurations.cpp = {
+--   {
+--     name = "Launch",
+--     type = "codelldb",
+--     request = "launch",
+--     cwd = "${workspaceFolder}",
+--     stopOnEntry = true,
+--     args = {},
+--     runInTerminal = true,
+--     options = {
+--       expressions = "native", -- Activation de l'option expressions
+--     },
+--   },
+-- }
+--
+-- -- Pour C/C++
+-- dap.configurations.c = dap.configurations.cpp
+-- dap.configurations.rust = dap.configurations.cpp
