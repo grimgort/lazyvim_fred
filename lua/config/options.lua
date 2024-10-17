@@ -6,7 +6,14 @@ vim.g.maplocalleader = ";"
 
 vim.opt.wrap = true -- bug with treesitter context
 vim.o.inccommand = "split"
-vim.opt.guifont = "JetBrains Mono:h13"
+if vim.g.neovide then
+  -- Put anything you want to happen only in Neovide here
+  vim.g.neovide_cursor_animation_length = 0.
+  vim.g.neovide_cursor_trail_size = 0.
+else
+  vim.o.guifont = "JetBrains Mono:h13"
+end
+-- vim.o.guifont = "Source Code Pro:h14" -- text below applies for VimScript
 
 --disable default neovim colorshema
 vim.o.wildignore = vim.o.wildignore

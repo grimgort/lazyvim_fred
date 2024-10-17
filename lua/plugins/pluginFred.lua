@@ -581,6 +581,7 @@ return {
         type = "codelldb",
         request = "launch",
         stopAtEntry = true,
+        expressions = "native",
         -- setupCommands = {
         -- 	{
         -- 		text = "-enable-pretty-printing",
@@ -591,23 +592,24 @@ return {
       },
       extra_ctest_args = { "-C", "Debug" },
     },
-    -- config = function()
-    --   require("ctest-telescope").setup({
-    --     dap_config = {
-    --       type = "cpp",
-    --       request = "launch",
-    --       stopAtEntry = true,
-    --       -- setupCommands = {
-    --       -- 	{
-    --       -- 		text = "-enable-pretty-printing",
-    --       -- 		description = "Enable pretty printing",
-    --       -- 		ignoreFailures = false,
-    --       -- 	},
-    --       -- },
-    --     },
-    --     extra_ctest_args = { "-C", "Debug" },
-    --   })
-    -- end,
+    config = function()
+      require("ctest-telescope").setup({
+        dap_config = {
+          type = "codelldb",
+          request = "launch",
+          stopAtEntry = true,
+          -- setupCommands = {
+          -- 	{
+          -- 		text = "-enable-pretty-printing",
+          -- 		description = "Enable pretty printing",
+          -- 		ignoreFailures = false,
+          -- 	},
+          -- },
+          expressions = "native",
+        },
+        extra_ctest_args = { "-C", "Debug" },
+      })
+    end,
   },
   -- {
   --   "nvim-telescope/telescope-project.nvim",
@@ -632,6 +634,37 @@ return {
       { "<C-a>", false },
     },
   },
+  {
+    "tiagovla/scope.nvim",
+    lazy = false,
+    config = function()
+      require("scope").setup({})
+      require("telescope").load_extension("scope")
+    end,
+    keys = {
+      { "<leader>ba", "<cmd>Telescope scope buffers<cr>", desc = "Telescope scope buffers" },
+    },
+  },
+  {
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { "<leader>gp", "<cmd>LazyGit<cr>", desc = "LazyGit plugin" },
+    },
+  },
   { -- This plugin
     "Zeioth/compiler.nvim",
     cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
@@ -650,5 +683,65 @@ return {
         default_detail = 1,
       },
     },
+  },
+  {
+    "nvim-neotest/neotest",
+    opts = {
+      adapters = {
+        ["neotest-python"] = {
+          -- Here you can specify the settings for the adapter, i.e.
+          -- runner = "pytest",
+          python = "python",
+        },
+      },
+    },
+  },
+  {
+    "mfussenegger/nvim-dap",
+    optional = true,
+    dependencies = {
+      -- Ensure C/C++ debugger is installed
+      "williamboman/mason.nvim",
+      optional = true,
+      opts = { ensure_installed = { "codelldb" } },
+    },
+    opts = function()
+      local dap = require("dap")
+      if not dap.adapters["codelldb"] then
+        require("dap").adapters["codelldb"] = {
+          type = "server",
+          host = "localhost",
+          port = "${port}",
+          executable = {
+            command = "codelldb",
+            args = {
+              "--port",
+              "${port}",
+            },
+          },
+        }
+      end
+      for _, lang in ipairs({ "c", "cpp" }) do
+        dap.configurations[lang] = {
+          {
+            type = "codelldb",
+            request = "launch",
+            name = "Launch file",
+            program = function()
+              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+            expressions = "native",
+          },
+          {
+            type = "codelldb",
+            request = "attach",
+            name = "Attach to process",
+            pid = require("dap.utils").pick_process,
+            cwd = "${workspaceFolder}",
+          },
+        }
+      end
+    end,
   },
 }
