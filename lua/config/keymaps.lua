@@ -1,5 +1,67 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+--
+-- local function remap_bracket_commands()
+--   local mappings = {
+--     ["[C"] = "ùC", -- Goto previous end @class.outer
+--     ["[A"] = "ùA", -- Goto previous end @parameter.inner
+--     ["[F"] = "ùF", -- Goto previous end @function.outer
+--     ["[f"] = "ùf", -- Goto previous start @function.outer
+--     ["[a"] = "ùa", -- Goto previous start @parameter.inner
+--     ["[c"] = "ùc", -- Goto previous start @class.outer
+--     ["[H"] = "ùH", -- First Hunk
+--     ["[h"] = "ùh", -- Prev Hunk
+--     ["["] = "ù", -- General remap of '[' to 'ù'
+--   }
+--
+--   -- Remapper les commandes
+--   for original, new in pairs(mappings) do
+--     -- Remap pour le mode normal
+--     vim.keymap.set("n", new, ":" .. original .. "<CR>", { noremap = true, silent = true })
+--
+--     -- Remap pour les autres modes si nécessaire
+--     vim.keymap.set("x", new, ":" .. original .. "<CR>", { noremap = true, silent = true })
+--     vim.keymap.set("o", new, ":" .. original .. "<CR>", { noremap = true, silent = true })
+--   end
+-- end
+--
+-- -- Exécuter la fonction de remapping
+-- remap_bracket_commands()
+
+-- Remapper les touches Ctrl+h, Ctrl+j, Ctrl+k, et Ctrl+l pour se déplacer en mode insert
+vim.keymap.set("n", "<A-h>", ":lua require('grug-far').open({ prefills = { paths = vim.fn.expand('%') } })<cr>", {})
+vim.keymap.set(
+  "v",
+  "<A-h>",
+  ":<C-u>lua require('grug-far').with_visual_selection({ prefills = { paths = vim.fn.expand('%') } })<cr>",
+  {}
+)
+vim.keymap.set("i", "<A-j>", "<Down>", { noremap = true, silent = true })
+vim.keymap.set("i", "<A-h>", "<Left>", { noremap = true, silent = true })
+vim.keymap.set("i", "<A-k>", "<Up>", { noremap = true, silent = true })
+vim.keymap.set("i", "<A-l>", "<Right>", { noremap = true, silent = true })
+
+vim.keymap.set("n", "<leader>l", "", { desc = "lspFred" })
+vim.keymap.set("n", "<leader>lj", "<cmd>lua vim.diagnostic.goto_next()<cr>", {})
+vim.keymap.set("n", "<leader>lk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", {})
+vim.keymap.set(
+  "n", -- Mode normal
+  "<leader>dd", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
+  ":lua require('dapui').float_element('console', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
+  { noremap = true, silent = true } -- Options
+)
+vim.keymap.set(
+  "n", -- Mode normal
+  "<leader>dn", -- Nouvelle combinaison de touches (par exemple, leader + d + n pour "next")
+  ":lua require('dap').step_over()<CR>", -- Appeler la fonction step_over de nvim-dap
+  { noremap = true, silent = true } -- Options
+)
+-- vim.keymap.set(
+--   "n", -- Mode normal
+--   "ù", -- La touche que vous remappez
+--   "[", -- Commande à exécuter (vous pouvez la remplacer par autre chose)
+--   { noremap = true, silent = true } -- Options
+-- )
 vim.keymap.set("n", "ç", '<CMD>lua require("FTerm").toggle()<CR>')
 vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
 
@@ -31,9 +93,9 @@ vim.keymap.set("v", "g<A-x>", function()
   require("dial.map").manipulate("decrement", "gvisual")
 end)
 
-vim.keymap.set({ "n", "x" }, "<leader>se", function()
-  require("ssr").open()
-end)
+-- vim.keymap.set({ "n", "x" }, "<leader>se", function()
+--   require("ssr").open()
+-- end)
 -- vim.keymap.set("n", "<C-j>", "[", { noremap = true, silent = false })
 -- vim.keymap.set("n", ")", "]", { noremap = true, silent = false })
 --
@@ -198,11 +260,11 @@ vim.keymap.set("c", "<S-j>", "<DOWN>", opt)
 -- vim.keymap.set("n", "<leader>gak", "<Plug>(git-conflict-prev-conflict)")
 -- vim.keymap.set("n", "<leader>gaj", "<Plug>(git-conflict-next-conflict)")
 
--- vim.api.nvim_set_keymap("n", "<leader>gah", "<CMD>diffg RE<CR>", opt)
--- vim.api.nvim_set_keymap("n", "<leader>gab", "<CMD>diffg LO<CR>", opt)
--- vim.api.nvim_set_keymap("n", "<leader>gal", "<CMD>diffg BA<CR>", opt)
+-- vim.keymap.set("n", "<leader>gah", "<CMD>diffg RE<CR>", opt)
+-- vim.keymap.set("n", "<leader>gab", "<CMD>diffg LO<CR>", opt)
+-- vim.keymap.set("n", "<leader>gal", "<CMD>diffg BA<CR>", opt)
 
--- vim.api.nvim_set_keymap("n", "<leader>gas", "<CMD>Gdiffsplit<CR>", opt)
+-- vim.keymap.set("n", "<leader>gas", "<CMD>Gdiffsplit<CR>", opt)
 
 vim.keymap.set("n", "<leader>zvv", "<cmd>windo diffthis<cr>")
 vim.keymap.set("n", "<leader>zvf", "<cmd>diffoff!<cr>")
@@ -213,27 +275,27 @@ vim.keymap.set("n", "<leader>zvf", "<cmd>diffoff!<cr>")
 vim.keymap.set("n", "Q", "q")
 vim.keymap.set("n", "q", "<Nop>")
 
-vim.keymap.set("n", "<F2>", "<cmd>RandomColorScheme<CR>")
+vim.keymap.set("n", "<F2>", "<cmd>Colorbox shuffle<CR>")
 
 --LazyVim
 -- tabs
--- vim.api.nvim_set_keymap("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
--- vim.api.nvim_set_keymap("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
--- vim.api.nvim_set_keymap("n", "<leader><tab>e", "<cmd>tabnew<cr>", { desc = "New Tab" })
--- vim.api.nvim_set_keymap("n", "<leader><tab><tab>", "<cmd>tabnext<cr>", { desc = "Next Tab" })
--- vim.api.nvim_set_keymap("n", "<leader><tab>b", "<cmd>tabclose<cr>", { desc = "Close Tab" })
--- vim.api.nvim_set_keymap("n", "<leader><tab>h", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+-- vim.keymap.set("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
+-- vim.keymap.set("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
+-- vim.keymap.set("n", "<leader><tab>e", "<cmd>tabnew<cr>", { desc = "New Tab" })
+-- vim.keymap.set("n", "<leader><tab><tab>", "<cmd>tabnext<cr>", { desc = "Next Tab" })
+-- vim.keymap.set("n", "<leader><tab>b", "<cmd>tabclose<cr>", { desc = "Close Tab" })
+-- vim.keymap.set("n", "<leader><tab>h", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
 vim.keymap.set("n", "gpd", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", opt)
 vim.keymap.set("n", "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", opt)
 vim.keymap.set("n", "gpc", "<cmd>lua require('goto-preview').close_all_win()<CR>", opt)
 vim.keymap.set("n", "gpr", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", opt)
 
--- vim.api.nvim_set_keymap("n", "s", "<cmd>HopChar1<cr>", { silent = true })
--- vim.api.nvim_set_keymap("n", "S", "<cmd>HopWord<cr>", { silent = true })
--- vim.api.nvim_set_keymap("v", "s", "<cmd>HopChar1<cr>", { silent = true })
--- vim.api.nvim_set_keymap("v", "S", "<cmd>HopWord<cr>", { silent = true })
--- vim.api.nvim_set_keymap("n", "<cr>", "<cmd>HopWord<cr>", { silent = true })
+-- vim.keymap.set("n", "s", "<cmd>HopChar1<cr>", { silent = true })
+-- vim.keymap.set("n", "S", "<cmd>HopWord<cr>", { silent = true })
+-- vim.keymap.set("v", "s", "<cmd>HopChar1<cr>", { silent = true })
+-- vim.keymap.set("v", "S", "<cmd>HopWord<cr>", { silent = true })
+-- vim.keymap.set("n", "<cr>", "<cmd>HopWord<cr>", { silent = true })
 
 vim.cmd([[
 nnoremap << >>
@@ -284,6 +346,7 @@ function QuitAllLua()
   vim.cmd("nohlsearch")
   -- vim.cmd("TroubleClose")
   vim.cmd("Neotree close")
+  vim.cmd("Neotest summary close")
   -- vim.cmd("SymbolsOutlineClose")
   --[[ vim.cmd("Lspsaga close_floaterm") ]]
   require("FTerm").close()
@@ -401,9 +464,7 @@ vim.keymap.set("n", "<F4>", function()
   -- local dap = require("dap")
   if dap.session() == nil then
     -- Only call this on C++ and C files
-    if vim.bo.filetype == "c" or vim.bo.filetype == "cpp" then
-      require("ctest-telescope").pick_test_and_debug()
-    end
+    require("ctest-telescope").pick_test_and_debug()
   else
     dap.continue()
   end

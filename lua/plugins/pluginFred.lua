@@ -45,7 +45,7 @@ return {
   -- change some telescope options and a keymap to browse plugin files
   {
     "nvim-telescope/telescope.nvim",
-    keys = {},
+    -- keys = {},
     -- change some options
     opts = {
       defaults = {
@@ -56,6 +56,7 @@ return {
 
   {
     "echasnovski/mini-git",
+    -- event = "BufEnter",
     version = false,
     main = "mini.git",
     config = function()
@@ -70,6 +71,7 @@ return {
   -- },
   {
     "stevearc/conform.nvim",
+    event = "BufEnter",
     opts = {
       formatters_by_ft = {
         lua = { "stylua" },
@@ -260,7 +262,7 @@ return {
   --     -- require("nvim-oxi").setup()
   --   end,
   -- },
-  { "vim-scripts/DoxygenToolkit.vim" },
+  { "vim-scripts/DoxygenToolkit.vim", cmd = "Dox" },
   -- {
   --   "shumphrey/fugitive-gitlab.vim",
   --   config = function()
@@ -284,6 +286,7 @@ return {
   -- },
   {
     "Shatur/neovim-tasks",
+    ft = { "cpp", "c", "txt" }, -- charger uniquement pour les fichiers C++ ou C
     config = function()
       local Path = require("plenary.path")
       require("tasks").setup({
@@ -336,6 +339,7 @@ return {
   -- },
   {
     "uga-rosa/translate.nvim",
+    event = "BufEnter",
     config = function()
       require("translate").setup({})
     end,
@@ -343,6 +347,7 @@ return {
   -- { "p00f/clangd_extensions.nvim" },
   {
     "rmagatti/goto-preview",
+    event = "BufEnter",
     config = function()
       require("goto-preview").setup({})
     end,
@@ -362,6 +367,7 @@ return {
     config = function()
       require("plugins.config.telekasten")
     end,
+    cmd = "Telekasten",
   },
   {
     "NeogitOrg/neogit",
@@ -370,6 +376,7 @@ return {
     config = function()
       require("plugins.config.neogit")
     end,
+    cmd = "Neogit",
   },
   -- {
   --   "kylechui/nvim-surround",
@@ -424,11 +431,11 @@ return {
   --     --- See dependencies
   --   },
   -- },
-  {
-    "xolox/vim-colorscheme-switcher",
-    dependencies = { "xolox/vim-misc" },
-    event = "VeryLazy",
-  },
+  -- {
+  --   "xolox/vim-colorscheme-switcher",
+  --   dependencies = { "xolox/vim-misc" },
+  --   event = "VeryLazy",
+  -- },
   -- {
   -- 	"chrisgrieser/nvim-tinygit",
   -- 	ft = { "git_rebase", "gitcommit" }, -- so ftplugins are loaded
@@ -441,12 +448,14 @@ return {
   -- },
   {
     "rhysd/devdocs.vim",
+    ft = { "cpp", "c" }, -- charger uniquement pour les fichiers C++ ou C
     config = function()
       vim.cmd([[let g:devdocs_filetype_map = {'c': 'c'} ]])
     end,
   },
   {
     "mzlogin/vim-markdown-toc",
+    ft = { "md" },
   },
   -- {
   --   "iamcco/markdown-preview.nvim",
@@ -494,32 +503,56 @@ return {
   -- },
   {
     "numtostr/FTerm.nvim",
+    event = "BufEnter",
     config = function()
       require("plugins.config.fterm")
     end,
   },
   {
     "cshuaimin/ssr.nvim",
-    -- module = "ssr",
-    -- Calling setup is optional.
-    config = function()
-      require("ssr").setup({
-        border = "rounded",
-        min_width = 50,
-        min_height = 5,
-        max_width = 120,
-        max_height = 25,
-        adjust_window = true,
-        keymaps = {
-          close = "q",
-          next_match = "n",
-          prev_match = "N",
-          replace_confirm = "<cr>",
-          replace_all = "<leader><cr>",
-        },
-      })
-    end,
+    keys = {
+      {
+        "<leader>se",
+        ":lua require('ssr').open()<cr>",
+      },
+    },
+
+    opts = {
+      border = "rounded",
+      min_width = 50,
+      min_height = 5,
+      max_width = 120,
+      max_height = 25,
+      adjust_window = true,
+      keymaps = {
+        close = "q",
+        next_match = "n",
+        prev_match = "N",
+        replace_confirm = "<cr>",
+        replace_all = "<leader><cr>",
+      },
+    },
   },
+  -- module = "ssr",
+  -- Calling setup is optional.
+  --   config = function()
+  --     require("ssr").setup({
+  --       border = "rounded",
+  --       min_width = 50,
+  --       min_height = 5,
+  --       max_width = 120,
+  --       max_height = 25,
+  --       adjust_window = true,
+  --       keymaps = {
+  --         close = "q",
+  --         next_match = "n",
+  --         prev_match = "N",
+  --         replace_confirm = "<cr>",
+  --         replace_all = "<leader><cr>",
+  --       },
+  --     })
+  --   end,
+  -- },
   {
     "linrongbin16/colorbox.nvim",
 
@@ -541,6 +574,7 @@ return {
   },
   {
     "max397574/better-escape.nvim",
+    event = "BufEnter",
     config = function()
       require("better_escape").setup()
     end,
@@ -562,6 +596,7 @@ return {
   -- },
   {
     "mpas/marp-nvim",
+    ft = { "md" },
     config = function()
       require("marp").setup({
         port = 8080,
@@ -572,6 +607,7 @@ return {
   },
   {
     "SGauvin/ctest-telescope.nvim",
+    ft = { "cpp", "c", "txt" },
     opts = {
       -- Path to the ctest executable
       ctest_path = "ctest",
@@ -665,27 +701,30 @@ return {
       { "<leader>gp", "<cmd>LazyGit<cr>", desc = "LazyGit plugin" },
     },
   },
-  { -- This plugin
-    "Zeioth/compiler.nvim",
-    cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
-    dependencies = { "stevearc/overseer.nvim", "nvim-telescope/telescope.nvim" },
-    opts = {},
-  },
-  { -- The task runner we use
-    "stevearc/overseer.nvim",
-    commit = "6271cab7ccc4ca840faa93f54440ffae3a3918bd",
-    cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
-    opts = {
-      task_list = {
-        direction = "bottom",
-        min_height = 25,
-        max_height = 25,
-        default_detail = 1,
-      },
-    },
-  },
+  -- { -- This plugin
+  --   "Zeioth/compiler.nvim",
+  --   ft = { "py", "c", "cpp" },
+  --   cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
+  --   dependencies = { "stevearc/overseer.nvim", "nvim-telescope/telescope.nvim" },
+  --   opts = {},
+  -- },
+  -- { -- The task runner we use
+  --   "stevearc/overseer.nvim",
+  --   ft = { "py", "c", "cpp" },
+  --   commit = "6271cab7ccc4ca840faa93f54440ffae3a3918bd",
+  --   cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
+  --   opts = {
+  --     task_list = {
+  --       direction = "bottom",
+  --       min_height = 25,
+  --       max_height = 25,
+  --       default_detail = 1,
+  --     },
+  --   },
+  -- },
   {
     "nvim-neotest/neotest",
+    ft = { "py", "c", "cpp" },
     opts = {
       adapters = {
         ["neotest-python"] = {
@@ -743,5 +782,64 @@ return {
         }
       end
     end,
+  },
+  { "echasnovski/mini.pairs", enabled = false },
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    config = true,
+    opts = {
+      active = true,
+      on_config_done = nil,
+      ---@usage  modifies the function or method delimiter by filetypes
+      map_char = {
+        all = "(",
+        tex = "{",
+      },
+      ---@usage check bracket in same line
+      enable_check_bracket_line = false,
+      ---@usage check treesitter
+      check_ts = true,
+      ts_config = {
+        lua = { "string", "source" },
+        javascript = { "string", "template_string" },
+        java = false,
+      },
+      disable_filetype = { "TelescopePrompt", "spectre_panel" },
+      ---@usage disable when recording or executing a macro
+      disable_in_macro = false,
+      ---@usage disable  when insert after visual block mode
+      disable_in_visualblock = false,
+      disable_in_replace_mode = true,
+      ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
+      enable_moveright = true,
+      ---@usage add bracket pairs after quote
+      enable_afterquote = true,
+      ---@usage trigger abbreviation
+      enable_abbr = false,
+      ---@usage switch for basic rule break undo sequence
+      break_undo = true,
+      map_cr = true,
+      ---@usage map the <BS> key
+      map_bs = true,
+      ---@usage map <c-w> to delete a pair if possible
+      map_c_w = false,
+      ---@usage Map the <C-h> key to delete a pair
+      map_c_h = false,
+      ---@usage  change default fast_wrap
+      fast_wrap = {
+        map = "<A-e>",
+        chars = { "{", "[", "(", '"', "'" },
+        pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
+        offset = 0, -- Offset from pattern match
+        end_key = "$",
+        keys = "qwertyuiopzxcvbnmasdfghjkl",
+        check_comma = true,
+        highlight = "Search",
+        highlight_grey = "Comment",
+      },
+    },
+    -- use opts = {} for passing setup options
+    -- this is equivalent to setup({}) function
   },
 }
