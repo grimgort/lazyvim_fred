@@ -2,9 +2,17 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 --
+-- vim.g.lazyvim_picker = "telescope"
 vim.g.maplocalleader = ";"
 
-vim.opt.wrap = true -- bug with treesitter context
+vim.g.root_spec = { ".git" }
+-- vim.g.rooter_patterns = { ".git" }
+-- vim.g.root_lsp_ignore = true
+
+-- vim.opt.bg = "light" -- probablement inutile
+-- vim.opt.wrap = true -- bug with treesitter context
+vim.opt.spell = false -- remplacé par ltex
+vim.opt.spelllang = {}
 vim.o.inccommand = "split"
 if vim.g.neovide then
   -- Put anything you want to happen only in Neovide here

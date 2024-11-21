@@ -29,7 +29,12 @@
 -- remap_bracket_commands()
 
 -- Remapper les touches Ctrl+h, Ctrl+j, Ctrl+k, et Ctrl+l pour se déplacer en mode insert
-vim.keymap.set("n", "<A-h>", ":lua require('grug-far').open({ prefills = { paths = vim.fn.expand('%') } })<cr>", {})
+vim.keymap.set(
+  "n",
+  "<A-h>",
+  ":lua require('grug-far').open({ prefills = { paths = vim.fn.expand('%'), search = vim.fn.expand('<cword>') }, flags = '--fixed-string' })<cr>",
+  {}
+)
 vim.keymap.set(
   "v",
   "<A-h>",
@@ -133,7 +138,13 @@ vim.keymap.set("n", "<leader>ee", "<cmd>Neotree toggle<CR>", opt)
 vim.keymap.set("n", "<leader>ef", "<cmd>:Neotree reveal<CR>", opt)
 
 vim.keymap.set("n", "<leader>gj", "<cmd>lua require 'gitsigns'.next_hunk()<cr>", opt)
-vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigns'.prev_hunk()<cr>", opt)
+vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigjjns'.prev_hunk()<cr>", opt)
+vim.keymap.set("n", "<leader>gn", "<cmd>Neogit<cr>", opt)
+vim.keymap.set("n", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
+vim.keymap.set("v", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
+vim.keymap.set("n", "<leader>gf", ":lua require('vgit').buffer_history_preview()<cr>", opt)
+
+-- vim.keymap.set("n", "<leader>gg", "<cmd>lua Snacks.lazygit.open()<cr>", opt)
 
 vim.keymap.set("n", "<leader>hj", "<cmd>lua vim.diagnostic.goto_next()<cr>", opt)
 vim.keymap.set("n", "<leader>hk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opt)
@@ -182,8 +193,9 @@ vim.keymap.set("n", "<leader>zq", "<cmd>copen<CR>", opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], opt)
 vim.keymap.set("n", "<leader>zh", [[:%s/<c-r><c-w>/<c-r><c-w>/g]], opt)
 vim.keymap.set("n", "<leader>zc", ":Telescope grep_string<cr>", opt)
-vim.keymap.set("n", "<leader>zf", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
-vim.keymap.set("n", "<leader><leader>", ":Telescope find_files <cr>", opt)
+vim.keymap.set("n", "<leader>ff", ":Telescope git_files<cr>", opt)
+vim.keymap.set("n", "<leader><leader>", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
+vim.keymap.set("n", "<leader>fg", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
 vim.keymap.set("n", "<leader>zm", "<cmd>Glow<cr>", opt)
 vim.keymap.set("n", "<leader>zp", "<cmd>MarkdownPreview<cr>", opt)
 
@@ -202,8 +214,8 @@ vim.keymap.set("n", "<C-;>", ":Telescope keymaps<cr>", opt)
 vim.keymap.set("n", "<C-!>", "<cmd>Telescope command_history<cr>", opt)
 
 -- Moving the cursor through long soft-wrapped lines
-vim.keymap.set("n", "j", "gj", opt)
-vim.keymap.set("n", "k", "gk", opt)
+-- vim.keymap.set("n", "j", "gj", opt)
+-- vim.keymap.set("n", "k", "gk", opt)
 
 -- navigation
 vim.keymap.set("i", "<A-Up>", "<C-\\><C-N><C-w>k", opt)
@@ -275,7 +287,10 @@ vim.keymap.set("n", "<leader>zvf", "<cmd>diffoff!<cr>")
 vim.keymap.set("n", "Q", "q")
 vim.keymap.set("n", "q", "<Nop>")
 
-vim.keymap.set("n", "<F2>", "<cmd>Colorbox shuffle<CR>")
+vim.keymap.set("n", "<F12>", "<cmd>Colorbox shuffle<CR>")
+vim.keymap.set("n", "<F1>", require("dap").continue, { desc = "DAP Continue" })
+vim.keymap.set("n", "<F2>", require("dap").step_over, { desc = "DAP Step Over" })
+vim.keymap.set("n", "<F3>", require("dap").run_to_cursor, { desc = "DAP run_to_cursor" })
 
 --LazyVim
 -- tabs
@@ -298,25 +313,55 @@ vim.keymap.set("n", "gpr", "<cmd>lua require('goto-preview').goto_preview_refere
 -- vim.keymap.set("n", "<cr>", "<cmd>HopWord<cr>", { silent = true })
 
 vim.cmd([[
-nnoremap << >>
-nnoremap >> <<
-vnoremap << >gv
-vnoremap >> <gv
-nnoremap dd "_dd
-nnoremap d "_d
-vnoremap d "_d
-nnoremap D "_D
-vnoremap D "_D
-nnoremap x "_x
-vnoremap x "_x
-nnoremap cc dd
-nnoremap c d
-vnoremap c d
+" nnoremap << >>
+" nnoremap >> <<
+" vnoremap << >gv
+" vnoremap >> <gv
+" nnoremap dd "_dd
+" nnoremap d "_d
+" vnoremap d "_d
+" nnoremap D "_D
+" vnoremap D "_D
+" nnoremap x "_x
+" vnoremap x "_x
+" nnoremap cc dd
+" nnoremap c d
+" vnoremap c d
 noremap <Del> "_x
 map! <S-Insert> <C-R>+
 ]])
 
 --[[ local M = {} ]]
+-- Définir des mappings pour le mode normal (nnoremap)
+-- vim.api.nvim_set_keymap("n", "<<", ">>", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n", ">>", "<<", { noremap = true, silent = true })
+--
+-- -- Définir des mappings pour le mode visuel (vnoremap)
+-- vim.api.nvim_set_keymap("v", "<<", ">gv", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("v", ">>", "<gv", { noremap = true, silent = true })
+--
+-- -- Définir des mappings pour supprimer sans copier dans le registre par défaut (nnoremap)
+-- -- vim.api.nvim_set_keymap("n", "dd", "_dd", { noremap = true, silent = true })
+-- -- vim.api.nvim_set_keymap("n", "d", "_d", { noremap = true, silent = true })
+-- -- vim.api.nvim_set_keymap("n", "x", "_x", { noremap = true, silent = true })
+-- -- vim.api.nvim_set_keymap("n", "D", "_D", { noremap = true, silent = true })
+--
+-- -- Même chose pour le mode visuel (vnoremap)
+-- -- vim.api.nvim_set_keymap("v", "d", "_d", { noremap = true, silent = true })
+-- -- vim.api.nvim_set_keymap("v", "x", "_x", { noremap = true, silent = true })
+-- -- vim.api.nvim_set_keymap("v", "D", "_D", { noremap = true, silent = true })
+--
+-- -- Mappings pour changer le texte (cc, c, et leurs variantes)
+-- vim.api.nvim_set_keymap("n", "cc", "dd", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n", "c", "d", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("v", "c", "d", { noremap = true, silent = true })
+--
+-- -- Mapping pour supprimer avec la touche de suppression (<Del>)
+-- vim.api.nvim_set_keymap("n", "<Del>", "_x", { noremap = true, silent = true })
+--
+-- -- Mapping pour insérer le contenu du presse-papiers système avec <S-Insert> en mode insertion (map!)
+-- vim.api.nvim_set_keymap("i", "<S-Insert>", "<C-R>+", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("c", "<S-Insert>", "<C-R>+", { noremap = true, silent = true })
 
 function Smart_quit()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -342,14 +387,23 @@ function QuitAllLua()
   vim.cmd("helpclose")
   vim.cmd("ccl")
   -- vim.cmd("NvimTreeClose")
-  vim.cmd("DiffviewClose")
+  if vim.fn.exists(":DiffviewClose") == 2 then
+    vim.cmd("DiffviewClose")
+  end
   vim.cmd("nohlsearch")
   -- vim.cmd("TroubleClose")
-  vim.cmd("Neotree close")
-  vim.cmd("Neotest summary close")
+  if vim.fn.exists(":Neotree") == 2 then
+    vim.cmd("Neotree close")
+  end
+  if vim.fn.exists(":Neotest") == 2 then
+    vim.cmd("Neotest summary close")
+  end
   -- vim.cmd("SymbolsOutlineClose")
   --[[ vim.cmd("Lspsaga close_floaterm") ]]
-  require("FTerm").close()
+
+  if vim.fn.exists(":FTerm") == 2 then
+    require("FTerm").close()
+  end
   --[[ :pclose ]]
   --[[   helpclose ]]
   --[[   ccl ]]

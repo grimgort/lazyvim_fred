@@ -1,4 +1,5 @@
 return {
+
   ------------------ special lazyvim ------------------------
   ---Use <tab> for completion and snippets (supertab).
   {
@@ -43,6 +44,71 @@ return {
     end,
   },
   -- change some telescope options and a keymap to browse plugin files
+  {
+    "nvimdev/dashboard-nvim",
+    lazy = false, -- As https://github.com/nvimdev/dashboard-nvim/pull/450, dashboard-nvim shouldn't be lazy-loaded to properly handle stdin.
+    opts = function()
+      local logo = [[
+███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███ 
+██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████ 
+█████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██ 
+██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██ 
+██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██ 
+    ]]
+
+      logo = string.rep("\n", 8) .. logo .. "\n\n"
+
+      local opts = {
+        theme = "doom",
+        hide = {
+          -- this is taken care of by lualine
+          -- enabling this messes up the actual laststatus setting after loading a file
+          statusline = false,
+        },
+        config = {
+          header = vim.split(logo, "\n"),
+        -- stylua: ignore
+        center = {
+          { action = 'Telescope projects',                           desc = " Find projects",       icon = " ", key = "p" },
+          { action = 'Telescope find_files',                           desc = " Find File",       icon = " ", key = "f" },
+          { action = "ene | startinsert",                              desc = " New File",        icon = " ", key = "n" },
+          { action = 'Telescope oldfiles',                 desc = " Recent Files",    icon = " ", key = "r" },
+          { action = 'Telescope live_grep',                desc = " Find Text",       icon = " ", key = "g" },
+          { action = 'lua LazyVim.pick.config_files()()',              desc = " Config",          icon = " ", key = "c" },
+          { action = 'lua require("persistence").load()',              desc = " Restore Session", icon = " ", key = "s" },
+          { action = "LazyExtras",                                     desc = " Lazy Extras",     icon = " ", key = "x" },
+          { action = "Lazy",                                           desc = " Lazy",            icon = "󰒲 ", key = "l" },
+          { action = function() vim.api.nvim_input("<cmd>qa<cr>") end, desc = " Quit",            icon = " ", key = "q" },
+        },
+          footer = function()
+            local stats = require("lazy").stats()
+            local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+            return { "⚡ Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms" }
+          end,
+        },
+      }
+
+      for _, button in ipairs(opts.config.center) do
+        button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
+        button.key_format = "  %s"
+      end
+
+      -- open dashboard after closing lazy
+      if vim.o.filetype == "lazy" then
+        vim.api.nvim_create_autocmd("WinClosed", {
+          pattern = tostring(vim.api.nvim_get_current_win()),
+          once = true,
+          callback = function()
+            vim.schedule(function()
+              vim.api.nvim_exec_autocmds("UIEnter", { group = "dashboard" })
+            end)
+          end,
+        })
+      end
+
+      return opts
+    end,
+  },
   {
     "nvim-telescope/telescope.nvim",
     -- keys = {},
@@ -262,7 +328,7 @@ return {
   --     -- require("nvim-oxi").setup()
   --   end,
   -- },
-  { "vim-scripts/DoxygenToolkit.vim", cmd = "Dox" },
+  -- { "vim-scripts/DoxygenToolkit.vim", cmd = "Dox" },
   -- {
   --   "shumphrey/fugitive-gitlab.vim",
   --   config = function()
@@ -286,7 +352,8 @@ return {
   -- },
   {
     "Shatur/neovim-tasks",
-    ft = { "cpp", "c", "txt" }, -- charger uniquement pour les fichiers C++ ou C
+    -- ft = { "cpp", "c", "txt" }, -- charger uniquement pour les fichiers C++ ou C
+    event = "BufEnter",
     config = function()
       local Path = require("plenary.path")
       require("tasks").setup({
@@ -369,15 +436,15 @@ return {
     end,
     cmd = "Telekasten",
   },
-  {
-    "NeogitOrg/neogit",
-    -- event = "VeryLazy",
-    -- requires = "nvim-lua/plenary.nvim",
-    config = function()
-      require("plugins.config.neogit")
-    end,
-    cmd = "Neogit",
-  },
+  -- {
+  --   "NeogitOrg/neogit",
+  --   -- event = "VeryLazy",
+  --   -- requires = "nvim-lua/plenary.nvim",
+  --   config = function()
+  --     require("plugins.config.neogit")
+  --   end,
+  --   cmd = "Neogit",
+  -- },
   -- {
   --   "kylechui/nvim-surround",
   --   version = "*", -- Use for stability; omit to use `main` branch for the latest features
@@ -403,34 +470,52 @@ return {
   --   end,
   -- },
   -- { "akinsho/git-conflict.nvim", version = "*", config = true }, -- fait grave bug
-  -- {
-  --   'tanvirtin/vgit.nvim',
-  --   dependencies= {
-  --     'nvim-lua/plenary.nvim'
-  --   },
-  -- 	config = function()
-  -- require('vgit').setup()
-  -- 		end,
-  --   },
-  -- {
-  --   "aaronhallaert/advanced-git-search.nvim",
-  --   config = function()
-  --     -- optional: setup telescope before loading the extension
-  --     require("telescope").setup({
-  --       -- move this to the place where you call the telescope setup function
-  --       extensions = {
-  --         advanced_git_search = {
-  --           -- See Config
-  --         },
-  --       },
-  --     })
-  --
-  --     require("telescope").load_extension("advanced_git_search")
-  --   end,
-  --   dependencies = {
-  --     --- See dependencies
-  --   },
-  -- },
+  {
+    "tanvirtin/vgit.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require("vgit").setup()
+    end,
+    opts = {
+      settings = {
+        scene = {
+          keymaps = {
+            quit = "q",
+          },
+        },
+      },
+    },
+  },
+  {
+    "aaronhallaert/advanced-git-search.nvim",
+    config = function()
+      -- optional: setup telescope before loading the extension
+      require("telescope").setup({
+        -- move this to the place where you call the telescope setup function
+        extensions = {
+          advanced_git_search = {
+            -- See Config
+          },
+        },
+      })
+
+      require("telescope").load_extension("advanced_git_search")
+    end,
+    dependencies = {
+      --- See dependencies
+    },
+  },
+  {
+    "niuiic/git-log.nvim",
+    dependencies = {
+      "niuiic/core.nvim",
+    },
+    config = function()
+      require("git-log").setup()
+    end,
+  },
   -- {
   --   "xolox/vim-colorscheme-switcher",
   --   dependencies = { "xolox/vim-misc" },
@@ -453,9 +538,17 @@ return {
       vim.cmd([[let g:devdocs_filetype_map = {'c': 'c'} ]])
     end,
   },
+  -- {
+  --   "mzlogin/vim-markdown-toc",
+  --   ft = { "md" },
+  -- },
   {
-    "mzlogin/vim-markdown-toc",
-    ft = { "md" },
+    "hedyhli/markdown-toc.nvim",
+    ft = "markdown", -- Lazy load on markdown filetype
+    cmd = { "Mtoc" }, -- Or, lazy load on "Mtoc" command
+    opts = {
+      -- Your configuration here (optional)
+    },
   },
   -- {
   --   "iamcco/markdown-preview.nvim",
@@ -533,26 +626,6 @@ return {
       },
     },
   },
-  -- module = "ssr",
-  -- Calling setup is optional.
-  --   config = function()
-  --     require("ssr").setup({
-  --       border = "rounded",
-  --       min_width = 50,
-  --       min_height = 5,
-  --       max_width = 120,
-  --       max_height = 25,
-  --       adjust_window = true,
-  --       keymaps = {
-  --         close = "q",
-  --         next_match = "n",
-  --         prev_match = "N",
-  --         replace_confirm = "<cr>",
-  --         replace_all = "<leader><cr>",
-  --       },
-  --     })
-  --   end,
-  -- },
   {
     "linrongbin16/colorbox.nvim",
 
@@ -569,7 +642,12 @@ return {
       require("colorbox").update()
     end,
     config = function()
-      require("colorbox").setup()
+      require("colorbox").setup({
+        filter = false,
+        background = nil,
+        policy = "shuffle",
+        timing = "startup",
+      })
     end,
   },
   {
@@ -681,26 +759,26 @@ return {
       { "<leader>ba", "<cmd>Telescope scope buffers<cr>", desc = "Telescope scope buffers" },
     },
   },
-  {
-    "kdheepak/lazygit.nvim",
-    lazy = true,
-    cmd = {
-      "LazyGit",
-      "LazyGitConfig",
-      "LazyGitCurrentFile",
-      "LazyGitFilter",
-      "LazyGitFilterCurrentFile",
-    },
-    -- optional for floating window border decoration
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    -- setting the keybinding for LazyGit with 'keys' is recommended in
-    -- order to load the plugin when the command is run for the first time
-    keys = {
-      { "<leader>gp", "<cmd>LazyGit<cr>", desc = "LazyGit plugin" },
-    },
-  },
+  -- {
+  --   "kdheepak/lazygit.nvim",
+  --   lazy = true,
+  --   cmd = {
+  --     "LazyGit",
+  --     "LazyGitConfig",
+  --     "LazyGitCurrentFile",
+  --     "LazyGitFilter",
+  --     "LazyGitFilterCurrentFile",
+  --   },
+  --   -- optional for floating window border decoration
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --   },
+  --   -- setting the keybinding for LazyGit with 'keys' is recommended in
+  --   -- order to load the plugin when the command is run for the first time
+  --   keys = {
+  --     { "<leader>gp", "<cmd>LazyGit<cr>", desc = "LazyGit plugin" },
+  --   },
+  -- },
   -- { -- This plugin
   --   "Zeioth/compiler.nvim",
   --   ft = { "py", "c", "cpp" },
@@ -744,6 +822,12 @@ return {
       optional = true,
       opts = { ensure_installed = { "codelldb" } },
     },
+    -- config = function()
+    -- local dap = require("dap")
+    -- dap.defaults.fallback.terminal_win_cmd = "tabnew"
+    -- dap.defaults.python.terminal_win_cmd = "belowright new"
+    -- dap.defaults.fallback.force_external_terminal = true
+    -- end,
     opts = function()
       local dap = require("dap")
       if not dap.adapters["codelldb"] then
@@ -757,6 +841,7 @@ return {
               "--port",
               "${port}",
             },
+            expressions = "native",
           },
         }
       end
@@ -778,68 +863,167 @@ return {
             name = "Attach to process",
             pid = require("dap.utils").pick_process,
             cwd = "${workspaceFolder}",
+            expressions = "native",
           },
         }
       end
     end,
   },
-  { "echasnovski/mini.pairs", enabled = false },
+  -- { "echasnovski/mini.pairs", enabled = false },
+  -- {
+  --   "windwp/nvim-autopairs",
+  --   event = "InsertEnter",
+  --   config = true,
+  --   opts = {
+  --     active = true,
+  --     on_config_done = nil,
+  --     ---@usage  modifies the function or method delimiter by filetypes
+  --     map_char = {
+  --       all = "(",
+  --       tex = "{",
+  --     },
+  --     ---@usage check bracket in same line
+  --     enable_check_bracket_line = false,
+  --     ---@usage check treesitter
+  --     check_ts = true,
+  --     ts_config = {
+  --       lua = { "string", "source" },
+  --       javascript = { "string", "template_string" },
+  --       java = false,
+  --     },
+  --     disable_filetype = { "TelescopePrompt", "spectre_panel" },
+  --     ---@usage disable when recording or executing a macro
+  --     disable_in_macro = false,
+  --     ---@usage disable  when insert after visual block mode
+  --     disable_in_visualblock = false,
+  --     disable_in_replace_mode = true,
+  --     ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
+  --     enable_moveright = true,
+  --     ---@usage add bracket pairs after quote
+  --     enable_afterquote = true,
+  --     ---@usage trigger abbreviation
+  --     enable_abbr = false,
+  --     ---@usage switch for basic rule break undo sequence
+  --     break_undo = true,
+  --     map_cr = true,
+  --     ---@usage map the <BS> key
+  --     map_bs = true,
+  --     ---@usage map <c-w> to delete a pair if possible
+  --     map_c_w = false,
+  --     ---@usage Map the <C-h> key to delete a pair
+  --     map_c_h = false,
+  --     ---@usage  change default fast_wrap
+  --     fast_wrap = {
+  --       map = "<A-e>",
+  --       chars = { "{", "[", "(", '"', "'" },
+  --       pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
+  --       offset = 0, -- Offset from pattern match
+  --       end_key = "$",
+  --       keys = "qwertyuiopzxcvbnmasdfghjkl",
+  --       check_comma = true,
+  --       highlight = "Search",
+  --       highlight_grey = "Comment",
+  --     },
+  --   },
+  --   -- use opts = {} for passing setup options
+  --   -- this is equivalent to setup({}) function
+  -- },
   {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
-    config = true,
+    "neovim/nvim-lspconfig",
     opts = {
-      active = true,
-      on_config_done = nil,
-      ---@usage  modifies the function or method delimiter by filetypes
-      map_char = {
-        all = "(",
-        tex = "{",
-      },
-      ---@usage check bracket in same line
-      enable_check_bracket_line = false,
-      ---@usage check treesitter
-      check_ts = true,
-      ts_config = {
-        lua = { "string", "source" },
-        javascript = { "string", "template_string" },
-        java = false,
-      },
-      disable_filetype = { "TelescopePrompt", "spectre_panel" },
-      ---@usage disable when recording or executing a macro
-      disable_in_macro = false,
-      ---@usage disable  when insert after visual block mode
-      disable_in_visualblock = false,
-      disable_in_replace_mode = true,
-      ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
-      enable_moveright = true,
-      ---@usage add bracket pairs after quote
-      enable_afterquote = true,
-      ---@usage trigger abbreviation
-      enable_abbr = false,
-      ---@usage switch for basic rule break undo sequence
-      break_undo = true,
-      map_cr = true,
-      ---@usage map the <BS> key
-      map_bs = true,
-      ---@usage map <c-w> to delete a pair if possible
-      map_c_w = false,
-      ---@usage Map the <C-h> key to delete a pair
-      map_c_h = false,
-      ---@usage  change default fast_wrap
-      fast_wrap = {
-        map = "<A-e>",
-        chars = { "{", "[", "(", '"', "'" },
-        pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
-        offset = 0, -- Offset from pattern match
-        end_key = "$",
-        keys = "qwertyuiopzxcvbnmasdfghjkl",
-        check_comma = true,
-        highlight = "Search",
-        highlight_grey = "Comment",
+      servers = {
+        tinymist = {
+          settings = {
+            exportPdf = "onType",
+            outputPath = "$root/target/$dir/$name",
+          },
+        },
+        ltex = {
+          settings = {
+            ltex = {
+              language = "auto",
+            },
+          },
+        },
       },
     },
-    -- use opts = {} for passing setup options
-    -- this is equivalent to setup({}) function
+  },
+  {
+    "chomosuke/typst-preview.nvim",
+    lazy = false, -- or ft = 'typst'
+    version = "1.*",
+    build = function()
+      require("typst-preview").update()
+    end,
+
+    config = function()
+      require("typst-preview").setup({
+        -- Setting this true will enable printing debug information with print()
+        debug = false,
+
+        -- Custom format string to open the output link provided with %s
+        -- open_cmd = "firefox %s -P typst-preview --class typst-preview",
+        -- open_cmd = nil,
+
+        -- Setting this to 'always' will invert black and white in the preview
+        -- Setting this to 'auto' will invert depending if the browser has enable
+        -- dark mode
+        -- Setting this to '{"rest": "<option>","image": "<option>"}' will apply
+        -- your choice of color inversion to images and everything else
+        -- separately.
+        invert_colors = "never",
+
+        -- Whether the preview will follow the cursor in the source file
+        follow_cursor = true,
+
+        -- Provide the path to binaries for dependencies.
+        -- Setting this will skip the download of the binary by the plugin.
+        -- Warning: Be aware that your version might be older than the one
+        -- required.
+        dependencies_bin = {
+          ["tinymist"] = nil,
+          ["websocat"] = nil,
+        },
+
+        -- A list of extra arguments (or nil) to be passed to previewer.
+        -- For example, extra_args = { "--input=ver=draft", "--ignore-system-fonts" }
+        extra_args = nil,
+
+        -- This function will be called to determine the root of the typst project
+        get_root = function(path_of_main_file)
+          return vim.fn.fnamemodify(path_of_main_file, ":p:h")
+        end,
+
+        -- This function will be called to determine the main file of the typst
+        -- project.
+        get_main_file = function(path_of_buffer)
+          return path_of_buffer
+        end,
+      })
+    end,
+  },
+  {
+    -- dd to balckhole
+    "gbprod/cutlass.nvim",
+    opts = {
+      cut_key = "c",
+      -- your configuration comes here
+      -- or don't set opts to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    "chrisgrieser/nvim-rip-substitute",
+    cmd = "RipSubstitute",
+    keys = {
+      {
+        "<A-g>",
+        function()
+          require("rip-substitute").sub()
+        end,
+        mode = { "n", "x" },
+        desc = " rip substitute",
+      },
+    },
   },
 }
