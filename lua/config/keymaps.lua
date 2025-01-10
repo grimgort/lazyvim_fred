@@ -1,3 +1,18 @@
+local fterm = require("FTerm")
+
+local gitui = fterm:new({
+    ft = 'fterm_gitui', -- You can also override the default filetype, if you want
+    cmd = "pwsh",
+    dimensions = {
+        height = 0.9,
+        width = 0.9
+    }
+})
+
+-- Use this to toggle gitui in a floating terminal
+vim.keymap.set('n', '<A-g>', function()
+    gitui:toggle()
+end)
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 --
@@ -27,7 +42,7 @@
 --
 -- -- Exécuter la fonction de remapping
 -- remap_bracket_commands()
-
+vim.keymap.set("n",'<leader>"','gsaiw"',{remap = true})
 -- Remapper les touches Ctrl+h, Ctrl+j, Ctrl+k, et Ctrl+l pour se déplacer en mode insert
 vim.keymap.set(
   "n",
@@ -52,7 +67,19 @@ vim.keymap.set("n", "<leader>lk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", {})
 vim.keymap.set(
   "n", -- Mode normal
   "<leader>dd", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
-  ":lua require('dapui').float_element('console', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
+  ":lua require('dapui').float_element('repl', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
+  { noremap = true, silent = true } -- Options
+)
+vim.keymap.set(
+  "n", -- Mode normal
+  "<leader>df", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
+  ":lua require('dapui').float_element('stacks', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
+  { desc = "DAP float stacks"  } -- Options
+)
+vim.keymap.set(
+  "n", -- Mode normal
+  "<leader>dd", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
+  ":lua require('dapui').float_element('repl', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
   { noremap = true, silent = true } -- Options
 )
 vim.keymap.set(
@@ -138,7 +165,8 @@ vim.keymap.set("n", "<leader>ee", "<cmd>Neotree toggle<CR>", opt)
 vim.keymap.set("n", "<leader>ef", "<cmd>:Neotree reveal<CR>", opt)
 
 vim.keymap.set("n", "<leader>gj", "<cmd>lua require 'gitsigns'.next_hunk()<cr>", opt)
-vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigjjns'.prev_hunk()<cr>", opt)
+vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigns'.prev_hunk()<cr>", opt)
+vim.keymap.set("n", "<leader>gp", "<cmd>lua require 'gitsigns'.preview_hunk()<cr>", opt)
 vim.keymap.set("n", "<leader>gn", "<cmd>Neogit<cr>", opt)
 vim.keymap.set("n", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
 vim.keymap.set("v", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
@@ -193,9 +221,10 @@ vim.keymap.set("n", "<leader>zq", "<cmd>copen<CR>", opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], opt)
 vim.keymap.set("n", "<leader>zh", [[:%s/<c-r><c-w>/<c-r><c-w>/g]], opt)
 vim.keymap.set("n", "<leader>zc", ":Telescope grep_string<cr>", opt)
-vim.keymap.set("n", "<leader>ff", ":Telescope git_files<cr>", opt)
-vim.keymap.set("n", "<leader><leader>", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
-vim.keymap.set("n", "<leader>fg", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
+-- vim.keymap.set("n", "<leader>ff", ":Telescope git_files<cr>", opt)
+vim.keymap.set("n", "<leader><leader>", ":Telescope git_files<cr>", opt)
+vim.keymap.set("n", "<leader>ff", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
+-- vim.keymap.set("n", "<leader>fg", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
 vim.keymap.set("n", "<leader>zm", "<cmd>Glow<cr>", opt)
 vim.keymap.set("n", "<leader>zp", "<cmd>MarkdownPreview<cr>", opt)
 

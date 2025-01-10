@@ -3,14 +3,19 @@
 -- Add any additional options here
 --
 -- vim.g.lazyvim_picker = "telescope"
+vim.o.shell = "cmd"
 vim.g.maplocalleader = ";"
-
+vim.diagnostic.config({
+  virtual_text = false,
+})
+vim.opt.smoothscroll = false
 vim.g.root_spec = { ".git" }
 -- vim.g.rooter_patterns = { ".git" }
 -- vim.g.root_lsp_ignore = true
 
 -- vim.opt.bg = "light" -- probablement inutile
--- vim.opt.wrap = true -- bug with treesitter context
+vim.g.autoformat = false
+vim.opt.wrap = true -- bug with treesitter context
 vim.opt.spell = false -- remplacé par ltex
 vim.opt.spelllang = {}
 vim.o.inccommand = "split"
@@ -31,10 +36,11 @@ vim.o.wildignore = vim.o.wildignore
 
 vim.opt.clipboard = "unnamedplus"
 vim.wo.relativenumber = false
-
-if vim.loop.os_uname().sysname == "Windows_NT" then
-  LazyVim.terminal.setup("pwsh")
-end
+vim.g.snacks_animate = false
+vim.opt.autowrite = true
+-- if vim.loop.os_uname().sysname == "Windows_NT" then
+--   LazyVim.terminal.setup("pwsh")
+-- end
 vim.opt.swapfile = false
 -- local default_options = {
 --    backup = false, -- creates a backup file

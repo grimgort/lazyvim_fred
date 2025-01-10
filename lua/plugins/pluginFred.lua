@@ -1,6 +1,138 @@
 return {
 
+  -- {
+  --   "saghen/blink.cmp",
+  --   opts = {
+  --     keymap = {
+  --       preset = "enter",
+  --       -- "enter" keymap
+  --       --   you may want to set `completion.list.selection = "manual" | "auto_insert"`
+  --       --
+  --       --   ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+  --       --   ['<C-e>'] = { 'hide', 'fallback' },
+  --       --   ['<CR>'] = { 'accept', 'fallback' },
+  --       --
+  --       --   ['<Tab>'] = { 'snippet_forward', 'fallback' },
+  --       --   ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
+  --       --
+  --       --   ['<Up>'] = { 'select_prev', 'fallback' },
+  --       --   ['<Down>'] = { 'select_next', 'fallback' },
+  --       --   ['<C-p>'] = { 'select_prev', 'fallback' },
+  --       --   ['<C-n>'] = { 'select_next', 'fallback' },
+  --       --
+  --       --   ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+  --       --   ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+  --     },
+  --     -- README also notes: 'you may want to set `completion.trigger.show_in_snippet = false`
+  --     -- or use `completion.list.selection = "manual" | "auto_insert"`'
+  --     -- completion = {
+  --     --   list = {
+  --     --     selection = "manual",
+  --     --   },
+  --     -- },
+  --     -- ghost_text = {
+  --     --   enabled = false,
+  --     -- },
+  --     signature = {
+  --       enabled = true,
+  --     },
+  --   },
+  -- },
+  -- {
+  --   "rafamadriz/friendly-snippets",
+  --       enabled= false
+  -- },
+
+  --  {
+  --  "hrsh7th/nvim-cmp",
+  --   enabled=false
+  -- }
   ------------------ special lazyvim ------------------------
+  --   {
+  --   "hrsh7th/nvim-cmp",
+  --   version = false, -- last release is way too old
+  --   event = "InsertEnter",
+  --   dependencies = {
+  --     "hrsh7th/cmp-nvim-lsp",
+  --     "hrsh7th/cmp-buffer",
+  --     "hrsh7th/cmp-path",
+  --   },
+  --   -- Not all LSP servers add brackets when completing a function.
+  --   -- To better deal with this, LazyVim adds a custom option to cmp,
+  --   -- that you can configure. For example:
+  --   --
+  --   -- ```lua
+  --   -- opts = {
+  --   --   auto_brackets = { "python" }
+  --   -- }
+  --   -- ```
+  --   opts = function()
+  --     vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+  --     local cmp = require("cmp")
+  --     local defaults = require("cmp.config.default")()
+  --     local auto_select = true
+  --     return {
+  --       auto_brackets = {}, -- configure any filetype to auto add brackets
+  --       completion = {
+  --         completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
+  --       },
+  --       preselect = auto_select and cmp.PreselectMode.Item or cmp.PreselectMode.None,
+  --       mapping = cmp.mapping.preset.insert({
+  --         ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+  --         ["<C-f>"] = cmp.mapping.scroll_docs(4),
+  --         ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+  --         ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+  --         ["<C-Space>"] = cmp.mapping.complete(),
+  --         ["<CR>"] = LazyVim.cmp.confirm({ select = auto_select }),
+  --         ["<C-y>"] = LazyVim.cmp.confirm({ select = true }),
+  --         ["<S-CR>"] = LazyVim.cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  --         ["<C-CR>"] = function(fallback)
+  --           cmp.abort()
+  --           fallback()
+  --         end,
+  --         ["<tab>"] = function(fallback)
+  --           return LazyVim.cmp.map({ "snippet_forward", "ai_accept" }, fallback)()
+  --         end,
+  --       }),
+  --       sources = cmp.config.sources({
+  --         { name = "lazydev" },
+  --         { name = "nvim_lsp" },
+  --         { name = "path" },
+  --       }, {
+  --         { name = "buffer" },
+  --       }),
+  --       formatting = {
+  --         format = function(entry, item)
+  --           local icons = LazyVim.config.icons.kinds
+  --           if icons[item.kind] then
+  --             item.kind = icons[item.kind] .. item.kind
+  --           end
+  --
+  --           local widths = {
+  --             abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 40,
+  --             menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 30,
+  --           }
+  --
+  --           for key, width in pairs(widths) do
+  --             if item[key] and vim.fn.strdisplaywidth(item[key]) > width then
+  --               item[key] = vim.fn.strcharpart(item[key], 0, width - 1) .. "…"
+  --             end
+  --           end
+  --
+  --           return item
+  --         end,
+  --       },
+  --       experimental = {
+  --         -- only show ghost text when we show ai completions
+  --         ghost_text = vim.g.ai_cmp and {
+  --           hl_group = "CmpGhostText",
+  --         } or false,
+  --       },
+  --       sorting = defaults.sorting,
+  --     }
+  --   end,
+  --   main = "lazyvim.util.cmp",
+  -- },
   ---Use <tab> for completion and snippets (supertab).
   {
     "hrsh7th/nvim-cmp",
@@ -143,6 +275,7 @@ return {
         lua = { "stylua" },
         fish = { "fish_indent" },
         sh = { "shfmt" },
+        cmake = { "gersemi" },
       },
     },
   },
@@ -394,10 +527,14 @@ return {
   --     require("plugins.config.nvim-treesitter-context")
   --   end,
   -- },
-  -- {
-  --   "skywind3000/asyncrun.vim",
-  --   enabled = true,
-  -- },
+  {
+    "skywind3000/asyncrun.vim",
+    enabled = true,
+ config = function()
+vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
+      -- Configuration ici
+    end,
+  },
   -- {
   --   "HiPhish/rainbow-delimiters.nvim",
   --   config = function()
@@ -436,15 +573,15 @@ return {
     end,
     cmd = "Telekasten",
   },
-  -- {
-  --   "NeogitOrg/neogit",
-  --   -- event = "VeryLazy",
-  --   -- requires = "nvim-lua/plenary.nvim",
-  --   config = function()
-  --     require("plugins.config.neogit")
-  --   end,
-  --   cmd = "Neogit",
-  -- },
+  {
+    "NeogitOrg/neogit",
+    -- event = "VeryLazy",
+    -- requires = "nvim-lua/plenary.nvim",
+    config = function()
+      require("plugins.config.neogit")
+    end,
+    cmd = "Neogit",
+  },
   -- {
   --   "kylechui/nvim-surround",
   --   version = "*", -- Use for stability; omit to use `main` branch for the latest features
@@ -602,6 +739,19 @@ return {
     end,
   },
   {
+    -- amongst your other plugins
+    -- {'akinsho/toggleterm.nvim', version = "*", config = true}
+    -- or
+    --
+  },
+  {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    config = function()
+      require("plugins.config.toggleterm")
+    end,
+  },
+  {
     "cshuaimin/ssr.nvim",
     keys = {
       {
@@ -654,7 +804,34 @@ return {
     "max397574/better-escape.nvim",
     event = "BufEnter",
     config = function()
-      require("better_escape").setup()
+      require("better_escape").setup({
+        -- pose probleme avec lazygit car jk fait sorti du mode insert enable uniquement en insert mode
+        default_mappings = false,
+        mappings = {
+          i = {
+            j = {
+              k = "<Esc>",
+              j = "<Esc>",
+            },
+          },
+          c = {
+            j = {
+              k = false,
+              j = false,
+            },
+          },
+          v = {
+            j = {
+              k = false,
+            },
+          },
+          s = {
+            j = {
+              k = false,
+            },
+          },
+        },
+      })
     end,
   },
   -- {
@@ -719,7 +896,8 @@ return {
           -- 		ignoreFailures = false,
           -- 	},
           -- },
-          expressions = "native",
+          expressions = "native", -- pour évalué correctement les expression  au debuger
+          terminal = "console",  -- pour que la redirectiond e la console fonctionne correctement
         },
         extra_ctest_args = { "-C", "Debug" },
       })
@@ -731,17 +909,17 @@ return {
   --     require("telescope").load_extension("project")
   --   end,
   -- },
-  {
-    "ahmedkhalf/project.nvim",
-    config = function()
-      require("project_nvim").setup({
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      })
-      require("telescope").load_extension("projects")
-    end,
-  },
+  -- {
+  --   "ahmedkhalf/project.nvim",
+  --   config = function()
+  --     require("project_nvim").setup({
+  --       -- your configuration comes here
+  --       -- or leave it empty to use the default settings
+  --       -- refer to the configuration section below
+  --     })
+  --     require("telescope").load_extension("projects")
+  --   end,
+  -- },
   {
     "monaqa/dial.nvim",
     keys = {
@@ -830,6 +1008,11 @@ return {
     -- end,
     opts = function()
       local dap = require("dap")
+      dap.adapters.cppdbg = {
+        id = "cppdbg",
+        type = "executable",
+        command = "/absolute/path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+      }
       if not dap.adapters["codelldb"] then
         require("dap").adapters["codelldb"] = {
           type = "server",
@@ -864,6 +1047,16 @@ return {
             pid = require("dap.utils").pick_process,
             cwd = "${workspaceFolder}",
             expressions = "native",
+          },
+          {
+            name = "Launch file cppdbg",
+            type = "cppdbg",
+            request = "launch",
+            program = function()
+              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+            stopAtEntry = true,
           },
         }
       end
@@ -931,6 +1124,12 @@ return {
   {
     "neovim/nvim-lspconfig",
     opts = {
+      inlay_hints = { enabled = false },
+      -- diagnostics = {
+      --   -- underline = true,
+      --   -- update_in_insert = false,
+      --   virtual_text = false,
+      -- },
       servers = {
         tinymist = {
           settings = {
@@ -942,6 +1141,17 @@ return {
           settings = {
             ltex = {
               language = "auto",
+            },
+          },
+        },
+        neocmakelsp = {
+          capabilities = {
+            textDocument = {
+              completion = {
+                completionItem = {
+                  snippetSupport = true,
+                },
+              },
             },
           },
         },
@@ -1026,4 +1236,69 @@ return {
       },
     },
   },
+  { "echasnovski/mini.sessions", enabled = false }, -- il parait que ca provoque des probleme d'écruture du shada fil a vérifier.
+  {
+    "folke/persistence.nvim",
+    enabled = false,
+  },
+  -- {
+  --   "ray-x/lsp_signature.nvim",
+  --   event = "InsertEnter",
+  --   opts = {
+  --     bind = true,
+  --     handler_opts = {
+  --       border = "rounded",
+  --     },
+  --     hint_enable = false,
+  --   },
+  --   config = function(_, opts)
+  --     require("lsp_signature").setup(opts)
+  --   end,
+  -- },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "nvim-neotest/nvim-nio" },
+  -- stylua: ignore
+  -- keys = {
+  --   { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
+  --   { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
+  -- },
+    opts = {},
+    config = function(_, opts)
+require("dapui").setup({
+  layouts = {
+    {
+      elements = {
+        -- Ajoutez ici les éléments que vous voulez afficher, sans "repl"
+        { id = "scopes", size = 0.3 },
+        { id = "breakpoints", size = 0.2 },
+        { id = "stacks", size = 0.25 },
+        { id = "watches", size = 0.25 },
+      },
+      size = 40,
+      position = "left",
+    },
+    {
+      elements = {
+        -- Ne pas inclure "console" ici pour éviter d'afficher le terminal
+        { id = "repl", size = 1.0 },
+      },
+      size = 10,
+      position = "bottom",
+    },
+  },
+})
+    end,
+  },
+{
+  "folke/snacks.nvim",
+  priority = 1000,
+  lazy = false,
+  opts = {
+    -- your configuration comes here
+    -- or leave it empty to use the default settings
+    -- refer to the configuration section below
+    bigfile = { enabled = true },
+  },
+}
 }

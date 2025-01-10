@@ -15,11 +15,12 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
   command = "echohl WarningMsg | echo 'File changed on disk. Buffer reloaded.' | echohl None",
 })
 
+
 -- # force l'écriture des shada qui plante tout le temps
-vim.api.nvim_create_autocmd("VimLeave", {
-  pattern = "*",
-  command = "rshada!",
-})
+-- vim.api.nvim_create_autocmd("VimLeave", {
+--   pattern = "*",
+--   command = "rshada!",
+-- })
 
 -- local dap = require("dap")
 --
