@@ -9,6 +9,20 @@ local gitui = fterm:new({
     }
 })
 
+function get_visual_selection()
+  local s_start = vim.fn.getpos("'<")
+  local s_end = vim.fn.getpos("'>")
+  local n_lines = math.abs(s_end[2] - s_start[2]) + 1
+  local lines = vim.api.nvim_buf_get_lines(0, s_start[2] - 1, s_end[2], false)
+  lines[1] = string.sub(lines[1], s_start[3], -1)
+  if n_lines == 1 then
+    lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3] - s_start[3] + 1)
+  else
+    lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3])
+  end
+  return table.concat(lines, '\n')
+end
+
 -- Use this to toggle gitui in a floating terminal
 vim.keymap.set('n', '<A-g>', function()
     gitui:toggle()
@@ -41,6 +55,11 @@ end)
 -- end
 --
 -- -- Exécuter la fonction de remapping
+
+vim.keymap.set("v", "<C-c>", "y`]", { noremap = true })
+vim.keymap.set("n", "<C-v>", "P", {})
+vim.keymap.set("i", "<C-v>", "P", {})
+-- vim.keymap.set("n", "p", "P", {})
 -- remap_bracket_commands()
 vim.keymap.set("n",'<leader>"','gsaiw"',{remap = true})
 -- Remapper les touches Ctrl+h, Ctrl+j, Ctrl+k, et Ctrl+l pour se déplacer en mode insert
@@ -78,8 +97,20 @@ vim.keymap.set(
 )
 vim.keymap.set(
   "n", -- Mode normal
-  "<leader>dd", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
-  ":lua require('dapui').float_element('repl', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
+  "<leader>dz", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
+  ":lua require('dapui').float_element('console', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
+  { noremap = true, silent = true } -- Options
+)
+vim.keymap.set(
+  "n", 
+  "<leader>dh",
+  ":lua require('dapui').elements.watches.add(vim.fn.expand('<cword>'))<CR>", -- Ouvre ou ferme la fenêtre REPL
+  { noremap = true, silent = true } -- Options
+)
+vim.keymap.set(
+  "v", 
+  "<leader>dh",
+  ":lua require('dapui').elements.watches.add(get_visual_selection())<CR>", -- Ouvre ou ferme la fenêtre REPL
   { noremap = true, silent = true } -- Options
 )
 vim.keymap.set(
@@ -170,7 +201,9 @@ vim.keymap.set("n", "<leader>gp", "<cmd>lua require 'gitsigns'.preview_hunk()<cr
 vim.keymap.set("n", "<leader>gn", "<cmd>Neogit<cr>", opt)
 vim.keymap.set("n", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
 vim.keymap.set("v", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
-vim.keymap.set("n", "<leader>gf", ":lua require('vgit').buffer_history_preview()<cr>", opt)
+-- vim.keymap.set("n", "<leader>gf", ":Telescope git_branches<cr>", opt)
+
+-- vim.keymap.set("n", "<leader>gf", ":lua require('vgit').buffer_history_preview()<cr>", opt)
 
 -- vim.keymap.set("n", "<leader>gg", "<cmd>lua Snacks.lazygit.open()<cr>", opt)
 

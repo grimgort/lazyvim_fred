@@ -1,43 +1,73 @@
 return {
 
-  -- {
-  --   "saghen/blink.cmp",
-  --   opts = {
-  --     keymap = {
-  --       preset = "enter",
-  --       -- "enter" keymap
-  --       --   you may want to set `completion.list.selection = "manual" | "auto_insert"`
-  --       --
-  --       --   ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
-  --       --   ['<C-e>'] = { 'hide', 'fallback' },
-  --       --   ['<CR>'] = { 'accept', 'fallback' },
-  --       --
-  --       --   ['<Tab>'] = { 'snippet_forward', 'fallback' },
-  --       --   ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
-  --       --
-  --       --   ['<Up>'] = { 'select_prev', 'fallback' },
-  --       --   ['<Down>'] = { 'select_next', 'fallback' },
-  --       --   ['<C-p>'] = { 'select_prev', 'fallback' },
-  --       --   ['<C-n>'] = { 'select_next', 'fallback' },
-  --       --
-  --       --   ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
-  --       --   ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
-  --     },
-  --     -- README also notes: 'you may want to set `completion.trigger.show_in_snippet = false`
-  --     -- or use `completion.list.selection = "manual" | "auto_insert"`'
-  --     -- completion = {
-  --     --   list = {
-  --     --     selection = "manual",
-  --     --   },
-  --     -- },
-  --     -- ghost_text = {
-  --     --   enabled = false,
-  --     -- },
-  --     signature = {
-  --       enabled = true,
-  --     },
-  --   },
-  -- },
+  {
+    "saghen/blink.cmp",
+    opts = {
+      completion = {
+        trigger = {
+          -- When false, will not show the completion window automatically when in a snippet
+          -- show_in_snippet = false,
+          -- When true, will show the completion window after typing a character that matches the `keyword.regex`
+          -- show_on_keyword = true,
+          -- -- When true, will show the completion window after typing a trigger character
+          -- show_on_trigger_character = true,
+          -- -- LSPs can indicate when to show the completion window via trigger characters
+          -- -- however, some LSPs (i.e. tsserver) return characters that would essentially
+          -- -- always show the window. We block these by default.
+          -- show_on_blocked_trigger_characters = { " ", "\n", "\t" },
+          -- -- When both this and show_on_trigger_character are true, will show the completion window
+          -- -- when the cursor comes after a trigger character after accepting an item
+          -- show_on_accept_on_trigger_character = true,
+          -- -- When both this and show_on_trigger_character are true, will show the completion window
+          -- -- when the cursor comes after a trigger character when entering insert mode
+          -- show_on_insert_on_trigger_character = true,
+          -- -- List of trigger characters (on top of `show_on_blocked_trigger_characters`) that won't trigger
+          -- -- the completion window when the cursor comes after a trigger character when
+          -- -- entering insert mode/accepting an item
+          -- show_on_x_blocked_trigger_characters = { "'", '"', "(" },
+        },
+
+        -- Displays a preview of the selected item on the current line
+        ghost_text = {
+          enabled = false,
+        },
+      },
+      keymap = {
+        preset = "enter",
+
+        -- "enter" keymap
+        --   you may want to set `completion.list.selection = "manual" | "auto_insert"`
+        --
+        --   ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+        --   ['<C-e>'] = { 'hide', 'fallback' },
+        --   ['<CR>'] = { 'accept', 'fallback' },
+        --
+        ["<Tab>"] = { "select_next", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "fallback" },
+        --
+        --   ['<Up>'] = { 'select_prev', 'fallback' },
+        --   ['<Down>'] = { 'select_next', 'fallback' },
+        ["<C-p>"] = { "snippet_forward", "fallback" },
+        ["<C-n>"] = { "snippet_backward", "fallback" },
+        --
+        --   ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+        --   ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+      },
+      -- README also notes: 'you may want to set `completion.trigger.show_in_snippet = false`
+      -- or use `completion.list.selection = "manual" | "auto_insert"`'
+      -- completion = {
+      --   list = {
+      --     selection = "manual",
+      --   },
+      -- },
+      -- ghost_text = {
+      --   enabled = false,
+      -- },
+      signature = {
+        enabled = true,
+      },
+    },
+  },
   -- {
   --   "rafamadriz/friendly-snippets",
   --       enabled= false
@@ -134,47 +164,47 @@ return {
   --   main = "lazyvim.util.cmp",
   -- },
   ---Use <tab> for completion and snippets (supertab).
-  {
-    "hrsh7th/nvim-cmp",
-    ---@param opts cmp.ConfigSchema
-    opts = function(_, opts)
-      local has_words_before = function()
-        unpack = unpack or table.unpack
-        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-        return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-      end
-
-      local cmp = require("cmp")
-
-      opts.mapping = vim.tbl_extend("force", opts.mapping, {
-        ["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            -- You could replace select_next_item() with confirm({ select = true }) to get VS Code autocompletion behavior
-            cmp.select_next_item()
-          elseif vim.snippet.active({ direction = 1 }) then
-            vim.schedule(function()
-              vim.snippet.jump(1)
-            end)
-          elseif has_words_before() then
-            cmp.complete()
-          else
-            fallback()
-          end
-        end, { "i", "s" }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif vim.snippet.active({ direction = -1 }) then
-            vim.schedule(function()
-              vim.snippet.jump(-1)
-            end)
-          else
-            fallback()
-          end
-        end, { "i", "s" }),
-      })
-    end,
-  },
+  -- {
+  --   "hrsh7th/nvim-cmp",
+  --   ---@param opts cmp.ConfigSchema
+  --   opts = function(_, opts)
+  --     local has_words_before = function()
+  --       unpack = unpack or table.unpack
+  --       local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  --       return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+  --     end
+  --
+  --     local cmp = require("cmp")
+  --
+  --     opts.mapping = vim.tbl_extend("force", opts.mapping, {
+  --       ["<Tab>"] = cmp.mapping(function(fallback)
+  --         if cmp.visible() then
+  --           -- You could replace select_next_item() with confirm({ select = true }) to get VS Code autocompletion behavior
+  --           cmp.select_next_item()
+  --         elseif vim.snippet.active({ direction = 1 }) then
+  --           vim.schedule(function()
+  --             vim.snippet.jump(1)
+  --           end)
+  --         elseif has_words_before() then
+  --           cmp.complete()
+  --         else
+  --           fallback()
+  --         end
+  --       end, { "i", "s" }),
+  --       ["<S-Tab>"] = cmp.mapping(function(fallback)
+  --         if cmp.visible() then
+  --           cmp.select_prev_item()
+  --         elseif vim.snippet.active({ direction = -1 }) then
+  --           vim.schedule(function()
+  --             vim.snippet.jump(-1)
+  --           end)
+  --         else
+  --           fallback()
+  --         end
+  --       end, { "i", "s" }),
+  --     })
+  --   end,
+  -- },
   -- change some telescope options and a keymap to browse plugin files
   {
     "nvimdev/dashboard-nvim",
@@ -252,15 +282,15 @@ return {
     },
   },
 
-  {
-    "echasnovski/mini-git",
-    -- event = "BufEnter",
-    version = false,
-    main = "mini.git",
-    config = function()
-      require("mini.git").setup()
-    end,
-  },
+  -- {
+  --   "echasnovski/mini-git",
+  --   -- event = "BufEnter",
+  --   version = false,
+  --   main = "mini.git",
+  --   config = function()
+  --     require("mini.git").setup()
+  --   end,
+  -- },
   -- {
   --   "kazhala/close-buffers.nvim",
   -- },
@@ -530,8 +560,8 @@ return {
   {
     "skywind3000/asyncrun.vim",
     enabled = true,
- config = function()
-vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
+    config = function()
+      vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
       -- Configuration ici
     end,
   },
@@ -607,24 +637,24 @@ vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
   --   end,
   -- },
   -- { "akinsho/git-conflict.nvim", version = "*", config = true }, -- fait grave bug
-  {
-    "tanvirtin/vgit.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    config = function()
-      require("vgit").setup()
-    end,
-    opts = {
-      settings = {
-        scene = {
-          keymaps = {
-            quit = "q",
-          },
-        },
-      },
-    },
-  },
+  -- {
+  --   "tanvirtin/vgit.nvim", // enorme lag sur les gros fichier avec ce plugin
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --   },
+  --   config = function()
+  --     require("vgit").setup()
+  --   end,
+  --   opts = {
+  --     settings = {
+  --       scene = {
+  --         keymaps = {
+  --           quit = "q",
+  --         },
+  --       },
+  --     },
+  --   },
+  -- },
   {
     "aaronhallaert/advanced-git-search.nvim",
     config = function()
@@ -897,7 +927,7 @@ vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
           -- 	},
           -- },
           expressions = "native", -- pour évalué correctement les expression  au debuger
-          terminal = "console",  -- pour que la redirectiond e la console fonctionne correctement
+          terminal = "console", -- pour que la redirectiond e la console fonctionne correctement
         },
         extra_ctest_args = { "-C", "Debug" },
       })
@@ -909,17 +939,20 @@ vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
   --     require("telescope").load_extension("project")
   --   end,
   -- },
-  -- {
-  --   "ahmedkhalf/project.nvim",
-  --   config = function()
-  --     require("project_nvim").setup({
-  --       -- your configuration comes here
-  --       -- or leave it empty to use the default settings
-  --       -- refer to the configuration section below
-  --     })
-  --     require("telescope").load_extension("projects")
-  --   end,
-  -- },
+  {
+    "ahmedkhalf/project.nvim",
+    opts = {
+      manual_mode = false,
+    },
+    -- config = function()
+    --   require("project_nvim").setup({
+    --     -- your configuration comes here
+    --     -- or leave it empty to use the default settings
+    --     -- refer to the configuration section below
+    --   })
+    --   require("telescope").load_extension("projects")
+    -- end,
+  },
   {
     "monaqa/dial.nvim",
     keys = {
@@ -1144,17 +1177,20 @@ vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
             },
           },
         },
-        neocmakelsp = {
-          capabilities = {
-            textDocument = {
-              completion = {
-                completionItem = {
-                  snippetSupport = true,
-                },
-              },
-            },
-          },
+        clangd = {
+          cmd = { "clangd", "--header-insertion=never" },
         },
+        -- neocmakelsp = {
+        --   capabilities = {
+        --     textDocument = {
+        --       completion = {
+        --         completionItem = {
+        --           snippetSupport = true,
+        --         },
+        --       },
+        --     },
+        --   },
+        -- },
       },
     },
   },
@@ -1265,40 +1301,74 @@ vim.g.asyncrun_open = 6 -- Ouvre le terminal en bas de l'écran
   -- },
     opts = {},
     config = function(_, opts)
-require("dapui").setup({
-  layouts = {
-    {
-      elements = {
-        -- Ajoutez ici les éléments que vous voulez afficher, sans "repl"
-        { id = "scopes", size = 0.3 },
-        { id = "breakpoints", size = 0.2 },
-        { id = "stacks", size = 0.25 },
-        { id = "watches", size = 0.25 },
-      },
-      size = 40,
-      position = "left",
-    },
-    {
-      elements = {
-        -- Ne pas inclure "console" ici pour éviter d'afficher le terminal
-        { id = "repl", size = 1.0 },
-      },
-      size = 10,
-      position = "bottom",
-    },
-  },
-})
+      require("dapui").setup({
+        layouts = {
+          {
+            elements = {
+              -- Ajoutez ici les éléments que vous voulez afficher, sans "repl"
+              { id = "scopes", size = 0.3 },
+              { id = "breakpoints", size = 0.2 },
+              { id = "stacks", size = 0.25 },
+              { id = "watches", size = 0.25 },
+            },
+            size = 40,
+            position = "left",
+          },
+          {
+            elements = {
+              -- Ne pas inclure "console" ici pour éviter d'afficher le terminal
+              { id = "repl", size = 1.0 },
+            },
+            size = 10,
+            position = "bottom",
+          },
+        },
+      })
     end,
   },
-{
-  "folke/snacks.nvim",
-  priority = 1000,
-  lazy = false,
-  opts = {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
-    bigfile = { enabled = true },
-  },
-}
+  -- {
+  --   "folke/snacks.nvim",
+  --   priority = 1000,
+  --   lazy = false,
+  --   opts = {
+  --     -- your configuration comes here
+  --     -- or leave it empty to use the default settings
+  --     -- refer to the configuration section below
+  --     bigfile = { enabled = true },
+  --   },
+  -- },
+  -- { "dam9000/classic-copy-paste.nvim" },
+  --
+  -- {
+  --   "nvim-lualine/lualine.nvim",
+  --   config = function()
+  --     local navic = require("nvim-navic")
+  --
+  --     require("lualine").setup({
+  --       -- sections = {
+  --       --   lualine_c = {
+  --       --     "navic",
+  --       --
+  --       --     -- Component specific options
+  --       --     color_correction = nil, -- Can be nil, "static" or "dynamic". This option is useful only when you have highlights enabled.
+  --       --     -- Many colorschemes don't define same backgroud for nvim-navic as their lualine statusline backgroud.
+  --       --     -- Setting it to "static" will perform a adjustment once when the component is being setup. This should
+  --       --     --	 be enough when the lualine section isn't changing colors based on the mode.
+  --       --     -- Setting it to "dynamic" will keep updating the highlights according to the current modes colors for
+  --       --     --	 the current section.
+  --       --
+  --       --     navic_opts = nil, -- lua table with same format as setup's option. All options except "lsp" options take effect when set here.
+  --       --   },
+  --       -- },
+  --       -- OR in winbar
+  --       winbar = {
+  --         lualine_c = {
+  --           "navic",
+  --           color_correction = nil,
+  --           navic_opts = nil,
+  --         },
+  --       },
+  --     })
+  --   end,
+  -- }, --
 }
