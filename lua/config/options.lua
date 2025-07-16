@@ -23,6 +23,12 @@ if vim.g.neovide then
   -- Put anything you want to happen only in Neovide here
   vim.g.neovide_cursor_animation_length = 0.
   vim.g.neovide_cursor_trail_size = 0.
+vim.g.neovide_cursor_animation_length = 0
+vim.g.neovide_scroll_animation_length = 0
+vim.g.neovide_floating_blur_amount_x = 0
+vim.g.neovide_floating_blur_amount_y = 0
+vim.g.neovide_hide_mouse_when_typing = false
+vim.g.neovide_cursor_vfx_mode = ""
 else
   vim.o.guifont = "JetBrains Mono:h13"
 end
@@ -42,6 +48,12 @@ vim.opt.autowrite = true
 --   LazyVim.terminal.setup("pwsh")
 -- end
 vim.opt.swapfile = false
+vim.opt.writebackup = false
+
+
+vim.o.shiftwidth = 4
+vim.o.tabstop = 4
+
 -- local default_options = {
 --    backup = false, -- creates a backup file
 --    clipboard = "unnamedplus", -- allows neovim to access the system clipboard

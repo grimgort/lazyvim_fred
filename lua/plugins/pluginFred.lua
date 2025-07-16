@@ -206,71 +206,71 @@ return {
   --   end,
   -- },
   -- change some telescope options and a keymap to browse plugin files
-  {
-    "nvimdev/dashboard-nvim",
-    lazy = false, -- As https://github.com/nvimdev/dashboard-nvim/pull/450, dashboard-nvim shouldn't be lazy-loaded to properly handle stdin.
-    opts = function()
-      local logo = [[
-███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███ 
-██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████ 
-█████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██ 
-██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██ 
-██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██ 
-    ]]
-
-      logo = string.rep("\n", 8) .. logo .. "\n\n"
-
-      local opts = {
-        theme = "doom",
-        hide = {
-          -- this is taken care of by lualine
-          -- enabling this messes up the actual laststatus setting after loading a file
-          statusline = false,
-        },
-        config = {
-          header = vim.split(logo, "\n"),
-        -- stylua: ignore
-        center = {
-          { action = 'Telescope projects',                           desc = " Find projects",       icon = " ", key = "p" },
-          { action = 'Telescope find_files',                           desc = " Find File",       icon = " ", key = "f" },
-          { action = "ene | startinsert",                              desc = " New File",        icon = " ", key = "n" },
-          { action = 'Telescope oldfiles',                 desc = " Recent Files",    icon = " ", key = "r" },
-          { action = 'Telescope live_grep',                desc = " Find Text",       icon = " ", key = "g" },
-          { action = 'lua LazyVim.pick.config_files()()',              desc = " Config",          icon = " ", key = "c" },
-          { action = 'lua require("persistence").load()',              desc = " Restore Session", icon = " ", key = "s" },
-          { action = "LazyExtras",                                     desc = " Lazy Extras",     icon = " ", key = "x" },
-          { action = "Lazy",                                           desc = " Lazy",            icon = "󰒲 ", key = "l" },
-          { action = function() vim.api.nvim_input("<cmd>qa<cr>") end, desc = " Quit",            icon = " ", key = "q" },
-        },
-          footer = function()
-            local stats = require("lazy").stats()
-            local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-            return { "⚡ Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms" }
-          end,
-        },
-      }
-
-      for _, button in ipairs(opts.config.center) do
-        button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
-        button.key_format = "  %s"
-      end
-
-      -- open dashboard after closing lazy
-      if vim.o.filetype == "lazy" then
-        vim.api.nvim_create_autocmd("WinClosed", {
-          pattern = tostring(vim.api.nvim_get_current_win()),
-          once = true,
-          callback = function()
-            vim.schedule(function()
-              vim.api.nvim_exec_autocmds("UIEnter", { group = "dashboard" })
-            end)
-          end,
-        })
-      end
-
-      return opts
-    end,
-  },
+  --   {
+  --     "nvimdev/dashboard-nvim",
+  --     lazy = false, -- As https://github.com/nvimdev/dashboard-nvim/pull/450, dashboard-nvim shouldn't be lazy-loaded to properly handle stdin.
+  --     opts = function()
+  --       local logo = [[
+  -- ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███
+  -- ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████
+  -- █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██
+  -- ██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██
+  -- ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██
+  --     ]]
+  --
+  --       logo = string.rep("\n", 8) .. logo .. "\n\n"
+  --
+  --       local opts = {
+  --         theme = "doom",
+  --         hide = {
+  --           -- this is taken care of by lualine
+  --           -- enabling this messes up the actual laststatus setting after loading a file
+  --           statusline = false,
+  --         },
+  --         config = {
+  --           header = vim.split(logo, "\n"),
+  --         -- stylua: ignore
+  --         center = {
+  --           { action = 'Telescope projects',                           desc = " Find projects",       icon = " ", key = "p" },
+  --           { action = 'Telescope find_files',                           desc = " Find File",       icon = " ", key = "f" },
+  --           { action = "ene | startinsert",                              desc = " New File",        icon = " ", key = "n" },
+  --           { action = 'Telescope oldfiles',                 desc = " Recent Files",    icon = " ", key = "r" },
+  --           { action = 'Telescope live_grep',                desc = " Find Text",       icon = " ", key = "g" },
+  --           { action = 'lua LazyVim.pick.config_files()()',              desc = " Config",          icon = " ", key = "c" },
+  --           { action = 'lua require("persistence").load()',              desc = " Restore Session", icon = " ", key = "s" },
+  --           { action = "LazyExtras",                                     desc = " Lazy Extras",     icon = " ", key = "x" },
+  --           { action = "Lazy",                                           desc = " Lazy",            icon = "󰒲 ", key = "l" },
+  --           { action = function() vim.api.nvim_input("<cmd>qa<cr>") end, desc = " Quit",            icon = " ", key = "q" },
+  --         },
+  --           footer = function()
+  --             local stats = require("lazy").stats()
+  --             local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+  --             return { "⚡ Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms" }
+  --           end,
+  --         },
+  --       }
+  --
+  --       for _, button in ipairs(opts.config.center) do
+  --         button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
+  --         button.key_format = "  %s"
+  --       end
+  --
+  --       -- open dashboard after closing lazy
+  --       if vim.o.filetype == "lazy" then
+  --         vim.api.nvim_create_autocmd("WinClosed", {
+  --           pattern = tostring(vim.api.nvim_get_current_win()),
+  --           once = true,
+  --           callback = function()
+  --             vim.schedule(function()
+  --               vim.api.nvim_exec_autocmds("UIEnter", { group = "dashboard" })
+  --             end)
+  --           end,
+  --         })
+  --       end
+  --
+  --       return opts
+  --     end,
+  --   },
   {
     "nvim-telescope/telescope.nvim",
     -- keys = {},
@@ -326,6 +326,7 @@ return {
     -- branch = "v3.x",
     -- version = "3.22",
     dependencies = { "MunifTanjim/nui.nvim", "s1n7ax/nvim-window-picker" },
+    event = "VeryLazy",
     cmd = "Neotree",
     init = function()
       vim.g.neo_tree_remove_legacy_commands = true
@@ -513,37 +514,38 @@ return {
   --     require("octo").setup()
   --   end,
   -- },
-  {
-    "Shatur/neovim-tasks",
-    -- ft = { "cpp", "c", "txt" }, -- charger uniquement pour les fichiers C++ ou C
-    event = "BufEnter",
-    config = function()
-      local Path = require("plenary.path")
-      require("tasks").setup({
-        default_params = {
-          -- Default module parameters with which `neovim.json` will be created.
-          cmake = {
-            cmd = "cmake", -- CMake executable to use, can be changed using `:Task set_module_param cmake cmd`.
-            build_dir = tostring(Path:new("{cwd}", "build")), -- Build directory. The expressions `{cwd}`, `{os}` and `{build_type}` will be expanded with the corresponding text values. Could be a function that return the path to the build directory.
-            build_type = "Debug", -- Build type, can be changed using `:Task set_module_param cmake build_type`.
-            dap_name = "lldb", -- DAP configuration name from `require('dap').configurations`. If there is no such configuration, a new one with this name as `type` will be created.
-            args = { -- Task default arguments.
-              configure = { "-D", "CMAKE_EXPORT_COMPILE_COMMANDS=1" },
-            },
-          },
-        },
-        save_before_run = false, -- If true, all files will be saved before executing a task.
-        params_file = "neovim.json", -- JSON file to store module and task parameters.
-        quickfix = {
-          pos = "botright", -- Default quickfix position.
-          height = 12, -- Default height.
-        },
-        dap_open_command = function()
-          return require("dap").repl.open()
-        end, --
-      })
-    end,
-  },
+  -- {
+  --   "Shatur/neovim-tasks",
+  --   enabled = false,
+  --   -- ft = { "cpp", "c", "txt" }, -- charger uniquement pour les fichiers C++ ou C
+  --   event = "BufEnter",
+  --   config = function()
+  --     local Path = require("plenary.path")
+  --     require("tasks").setup({
+  --       default_params = {
+  --         -- Default module parameters with which `neovim.json` will be created.
+  --         cmake = {
+  --           cmd = "cmake", -- CMake executable to use, can be changed using `:Task set_module_param cmake cmd`.
+  --           build_dir = tostring(Path:new("{cwd}", "build", "{build_kit}", "{build_type}")), -- Build directory. The expressions `{cwd}`, `{os}` and `{build_type}` will be expanded with the corresponding text values. Could be a function that return the path to the build directory.
+  --           build_type = "Debug", -- Build type, can be changed using `:Task set_module_param cmake build_type`.
+  --           dap_name = "lldb", -- DAP configuration name from `require('dap').configurations`. If there is no such configuration, a new one with this name as `type` will be created.
+  --           args = { -- Task default arguments.
+  --             configure = { "-D", "CMAKE_EXPORT_COMPILE_COMMANDS=1" },
+  --           },
+  --         },
+  --       },
+  --       save_before_run = false, -- If true, all files will be saved before executing a task.
+  --       params_file = "neovim.json", -- JSON file to store module and task parameters.
+  --       quickfix = {
+  --         pos = "botright", -- Default quickfix position.
+  --         height = 12, -- Default height.
+  --       },
+  --       dap_open_command = function()
+  --         return require("dap").repl.open()
+  --       end, --
+  --     })
+  --   end,
+  -- },
   -- {
   -- "wellle/context.vim",
   --     config = function( )
@@ -586,14 +588,16 @@ return {
       require("goto-preview").setup({})
     end,
   },
-  -- {
-  --   "Civitasv/cmake-tools.nvim",
-  --   enabled = true,
-  --   -- event = "VeryLazy",
-  --   config = function()
-  --     -- require("plugins.configs.cmakeTool")
-  --   end,
-  -- },
+
+  -- {'ilyachur/cmake4vim'},
+  {
+    "Civitasv/cmake-tools.nvim",
+    enabled = true,
+    -- event = "VeryLazy",
+    config = function()
+      require("plugins.config.cmakeTool")
+    end,
+  },
   {
     "nvim-telekasten/telekasten.nvim",
     -- event = "VeryLazy",
@@ -677,11 +681,11 @@ return {
   {
     "niuiic/git-log.nvim",
     dependencies = {
-      "niuiic/core.nvim",
+      "niuiic/omega.nvim",
     },
-    config = function()
-      require("git-log").setup()
-    end,
+    -- config = function()
+    --   require("git-log").setup()
+    -- end,
   },
   -- {
   --   "xolox/vim-colorscheme-switcher",
@@ -927,7 +931,8 @@ return {
           -- 	},
           -- },
           expressions = "native", -- pour évalué correctement les expression  au debuger
-          terminal = "console", -- pour que la redirectiond e la console fonctionne correctement
+          -- terminal = "console", -- pour que la redirectiond e la console fonctionne correctement
+          -- terminal = "external", -- pour que la redirectiond e la console fonctionne correctement
         },
         extra_ctest_args = { "-C", "Debug" },
       })
@@ -1178,8 +1183,11 @@ return {
           },
         },
         clangd = {
-          cmd = { "clangd", "--header-insertion=never" },
+          cmd = { "D:/Intel/compiler/latest/windows/bin-llvm/clangd", "--header-insertion=never" },
         },
+      -- gdscript = {
+      --   cmd = { "ncat", "localhost", "6005" },
+      -- },
         -- neocmakelsp = {
         --   capabilities = {
         --     textDocument = {
@@ -1261,22 +1269,13 @@ return {
   {
     "chrisgrieser/nvim-rip-substitute",
     cmd = "RipSubstitute",
-    keys = {
-      {
-        "<A-g>",
-        function()
-          require("rip-substitute").sub()
-        end,
-        mode = { "n", "x" },
-        desc = " rip substitute",
-      },
-    },
+    keys = {},
   },
-  { "echasnovski/mini.sessions", enabled = false }, -- il parait que ca provoque des probleme d'écruture du shada fil a vérifier.
-  {
-    "folke/persistence.nvim",
-    enabled = false,
-  },
+  -- { "echasnovski/mini.sessions", enabled = false }, -- il parait que ca provoque des probleme d'écruture du shada fil a vérifier.
+  -- {
+  --   "folke/persistence.nvim",
+  --   enabled = false,
+  -- },
   -- {
   --   "ray-x/lsp_signature.nvim",
   --   event = "InsertEnter",
@@ -1300,43 +1299,108 @@ return {
   --   { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
   -- },
     opts = {},
-    config = function(_, opts)
-      require("dapui").setup({
-        layouts = {
-          {
-            elements = {
-              -- Ajoutez ici les éléments que vous voulez afficher, sans "repl"
-              { id = "scopes", size = 0.3 },
-              { id = "breakpoints", size = 0.2 },
-              { id = "stacks", size = 0.25 },
-              { id = "watches", size = 0.25 },
-            },
-            size = 40,
-            position = "left",
-          },
-          {
-            elements = {
-              -- Ne pas inclure "console" ici pour éviter d'afficher le terminal
-              { id = "repl", size = 1.0 },
-            },
-            size = 10,
-            position = "bottom",
-          },
-        },
-      })
-    end,
+    -- config = function(_, opts)
+    --   require("dapui").setup({
+    --     layouts = {
+    --       {
+    --         elements = {
+    --           -- Ajoutez ici les éléments que vous voulez afficher, sans "repl"
+    --           { id = "scopes", size = 0.3 },
+    --           { id = "breakpoints", size = 0.2 },
+    --           { id = "stacks", size = 0.25 },
+    --           { id = "watches", size = 0.25 },
+    --         },
+    --         size = 40,
+    --         position = "left",
+    --       },
+    --       {
+    --         elements = {
+    --           -- Ne pas inclure "console" ici pour éviter d'afficher le terminal
+    --           { id = "repl", size = 1.0 },
+    --         },
+    --         size = 10,
+    --         position = "bottom",
+    --       },
+    --     },
+    --   })
+    -- end,
   },
-  -- {
-  --   "folke/snacks.nvim",
-  --   priority = 1000,
-  --   lazy = false,
-  --   opts = {
-  --     -- your configuration comes here
-  --     -- or leave it empty to use the default settings
-  --     -- refer to the configuration section below
-  --     bigfile = { enabled = true },
-  --   },
-  -- },
+  {
+    "folke/snacks.nvim",
+    --     config = function()
+    --       require("snacks").setup({
+    --         dashboard = {
+    --           keys = {
+    --             { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+    --             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+    --             { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+    --             { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+    --             {
+    --               icon = " ",
+    --               key = "c",
+    --               desc = "Config",
+    --               action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+    --             },
+    --             { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+    --             { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+    --             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+    --           },
+    --           header = [[
+    -- -- ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███
+    -- -- ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████
+    -- -- █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██
+    -- -- ██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██
+    -- -- ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██
+    -- --     ]],
+    --           sections = {
+    --             { section = "header" },
+    --             { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+    --             { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+    --             { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+    --             { section = "startup" },
+    --           },
+    --         },
+    --       })
+    --     end,
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+      bigfile = { enabled = true },
+      indent = { enabled = true },
+      dashboard = {
+        keys = {
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+          { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+          {
+            icon = " ",
+            key = "c",
+            desc = "Config",
+            action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+          },
+          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        },
+        header = [[
+ -- ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███ 
+ -- ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████ 
+ -- █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██ 
+ -- ██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██ 
+ -- ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██ 
+ --     ]],
+        sections = {
+          { section = "header" },
+          { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+          { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+          { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+          { section = "startup" },
+        },
+      },
+    },
+  },
   -- { "dam9000/classic-copy-paste.nvim" },
   --
   -- {
@@ -1371,4 +1435,115 @@ return {
   --     })
   --   end,
   -- }, --
+  { "equalsraf/neovim-gui-shim" }, -- for neovim-qt drag and drop work
+  { "artemave/workspace-diagnostics.nvim" },
+  {
+    "dzfrias/arena.nvim",
+    event = "BufWinEnter",
+    -- Calls `.setup()` automatically
+    config = function()
+      require("arena").setup({
+        ignore_current = true,
+      })
+    end,
+  },
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release",
+    enabled = false,
+  },
+  { "tzachar/cmp-tabnine", enabled = false },
+  { "ku1ik/vim-pasta" },
+  -- {
+  --   "lewis6991/gitsigns.nvim",
+  --   config = function()
+  --     require("gitsigns").setup({
+  --       _extmark_signs = true, -- utile pour de meilleures perf'
+  --       preview_config = { border = "rounded" },
+  --       -- Compare to HEAD instead of index
+  --       attach_to_untracked = true,
+  --       current_line_blame = false,
+  --       diff_opts = {
+  --         internal = true,
+  --         linematch = 60,
+  --       },
+  --       -- 👇 compare working directory avec HEAD
+  --       watch_gitdir = {
+  --         interval = 1000,
+  --         follow_files = true,
+  --       },
+  --       -- 👇 ceci est important
+  --       yadm = { enable = false },
+  --     })
+  --   end,
+  -- },
+  -- {
+  --   "yorickpeterse/nvim-pqf",
+  -- event = "VeryLazy", -- Or `LspAttach`
+  --   config = function()
+  --     require("pqf").setup()
+  --   end,
+  -- },
+    -- {'kevinhwang91/nvim-bqf'},
+{
+  "olimorris/codecompanion.nvim",
+  config = function()
+    require("codecompanion").setup()
+  end,
+  opts = {
+    adapter = "ollama",
+    adapters = {
+      ollama = {
+        endpoint = "http://localhost:11434/api/generate",
+        model = "llama3",
+        -- parameters = {
+        --   temperature = 0.7,
+        --   stream = false,
+        -- },
+      },
+    },
+  },
+  requires = {
+    "nvim-lua/plenary.nvim",
+    "nvim-treesitter/nvim-treesitter",
+  }
+},
+-- {
+--   'stevearc/quicker.nvim',
+--   event = "FileType qf",
+--   ---@module "quicker"
+--   ---@type quicker.SetupOptions
+--   opts = {},
+-- config = function()
+--       require("quicker").setup()
+--     end,
+-- },
+    
+  -- {
+  --   'stevearc/quicker.nvim',
+  --   event = "FileType qf",
+  --   ---@module "quicker"
+  --   ---@type quicker.SetupOptions
+  --   opts = {},
+  -- }
+  -- {
+  --     "rachartier/tiny-inline-diagnostic.nvim",
+  --     event = "VeryLazy", -- Or `LspAttach`
+  --     priority = 1000, -- needs to be loaded in first
+  --     config = function()
+  --         require('tiny-inline-diagnostic').setup()
+  --         vim.diagnostic.config({ virtual_text = false }) -- Only if needed in your configuration, if you already have native LSP diagnostics
+  --     end
+  -- },
+  -- { "cdelledonne/vim-cmake" },
+  -- { "rafamadriz/friendly-snippets",
+  -- enabled = false}
+  -- {
+  --   "2kabhishek/markit.nvim",
+  --   config = function()
+  --     require("markit").setup{}
+  --   end,
+  --   event = { "BufReadPre", "BufNewFile" },
+  -- },
+
 }

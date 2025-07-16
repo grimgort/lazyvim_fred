@@ -23,10 +23,27 @@ function get_visual_selection()
   return table.concat(lines, '\n')
 end
 
+
+vim.keymap.set("v", "<A-g>", ":RipSubstitute<CR>")
+vim.keymap.set("n", "<A-g>", ":.RipSubstitute<CR>")
+
+vim.keymap.set("n", "<space>bb", ":lua require('arena').toggle()<CR>")
+
+
+vim.api.nvim_set_keymap('n', '<space>xX', '', {
+ desc = "populate trouble for workspace diagnostique" ,
+  noremap = true,
+  callback = function()
+    for _, client in ipairs(vim.lsp.buf_get_clients()) do
+      require("workspace-diagnostics").populate_workspace_diagnostics(client, 0)
+    end
+  end
+})
+
 -- Use this to toggle gitui in a floating terminal
-vim.keymap.set('n', '<A-g>', function()
-    gitui:toggle()
-end)
+-- vim.keymap.set('n', '<A-g>', function()
+--     gitui:toggle()
+-- end)
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 --
@@ -75,6 +92,20 @@ vim.keymap.set(
   ":<C-u>lua require('grug-far').with_visual_selection({ prefills = { paths = vim.fn.expand('%') } })<cr>",
   {}
 )
+vim.keymap.set(
+  "n",
+  "<A-s>",
+  ":lua require('grug-far').open({ prefills = { search = vim.fn.expand('<cword>') }, flags = '-i' })<cr>",
+  {}
+)
+vim.keymap.set(
+  "v",
+  "<A-s>",
+  ":lua require('grug-far').with_visual_selection({ prefills = { search = vim.fn.expand('%') }, flags = '-i' })<cr>",
+  {}
+)
+
+
 vim.keymap.set("i", "<A-j>", "<Down>", { noremap = true, silent = true })
 vim.keymap.set("i", "<A-h>", "<Left>", { noremap = true, silent = true })
 vim.keymap.set("i", "<A-k>", "<Up>", { noremap = true, silent = true })
@@ -130,6 +161,7 @@ vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', {
 
 vim.keymap.set("n", "<leader>nn", "<cmd>Telekasten find_notes<CR>", { noremap = true, silent = false })
 vim.keymap.set("n", "<leader>nb", "<cmd>Telekasten new_note<CR>", { noremap = true, silent = false })
+vim.keymap.set("n", "<leader>nf", "<cmd>Telekasten search_notes<CR>", { noremap = true, silent = false })
 
 vim.keymap.set("n", "<A-a>", function()
   require("dial.map").manipulate("increment", "normal")
@@ -166,7 +198,7 @@ end)
 vim.keymap.set(
   "n",
   "<leader>sz",
-  "<cmd>lua require('grug-far').open({ prefills = { paths = vim.fn.expand(' % ') } })<CR>",
+  "<cmd>lua require('grug-far').open({ prefills = { paths = vim.fn.expand(' % ') }, flags = '-i' })<CR>",
   {}
 )
 
@@ -195,8 +227,8 @@ vim.keymap.set("n", "<leader>e", "", { desc = "Neotree" })
 vim.keymap.set("n", "<leader>ee", "<cmd>Neotree toggle<CR>", opt)
 vim.keymap.set("n", "<leader>ef", "<cmd>:Neotree reveal<CR>", opt)
 
-vim.keymap.set("n", "<leader>gj", "<cmd>lua require 'gitsigns'.next_hunk()<cr>", opt)
-vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigns'.prev_hunk()<cr>", opt)
+vim.keymap.set("n", "<leader>gj", "<cmd>lua require 'gitsigns'.nav_hunk('next',{target='all'})<cr>", opt)
+vim.keymap.set("n", "<leader>gk", "<cmd>lua require 'gitsigns'.nav_hunk('prev',{target='all'})<cr>", opt)
 vim.keymap.set("n", "<leader>gp", "<cmd>lua require 'gitsigns'.preview_hunk()<cr>", opt)
 vim.keymap.set("n", "<leader>gn", "<cmd>Neogit<cr>", opt)
 vim.keymap.set("n", "<leader>gr", ":lua require('git-log').check_log()<cr>", opt)
@@ -212,14 +244,15 @@ vim.keymap.set("n", "<leader>hk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opt
 
 vim.keymap.set("n", "<leader>dq", "<cmd>e ./.vscode/launch.json<CR>", { silent = true, noremap = true })
 
-vim.keymap.set("n", "<F8>", ":CMakeBuild <cr>", opt)
-vim.keymap.set("n", "<F5>", ":Task start cmake configure<cr>", opt)
-vim.keymap.set("n", "<F6>", ":Task start cmake build_all -j10 --config Release<cr>", opt)
-vim.keymap.set("n", "<F7>", ":Task start cmake build_all -j10 <cr>", opt)
+-- vim.keymap.set("n", "<F8>", ":CMakeBuild <cr>", opt)
+-- vim.keymap.set("n", "<F5>", ":Task start cmake configure<cr>", opt)
+-- vim.keymap.set("n", "<F6>", ":Task start cmake build_all -j10 --config Release<cr>", opt)
+-- vim.keymap.set("n", "<F7>", ":Task start cmake build_all -j10 <cr>", opt)
 
--- vim.keymap.set("n", "<F5>", ":AsyncRun cmake -S . -B build<cr>", opt)
--- vim.keymap.set("n", "<F6>", ":AsyncRun cmake --build build --config Release -j10<cr>", opt)
--- vim.keymap.set("n", "<F7>", ":AsyncRun cmake --build build --config Debug -j10<cr>", opt)
+vim.keymap.set("n", "<F5>", ":AsyncRun cmake -S . -B build<cr>", opt)
+vim.keymap.set("n", "<F6>", ":AsyncRun cmake --build build --config Release -j10<cr>", opt)
+vim.keymap.set("n", "<F7>", ":AsyncRun cmake --build build --config Debug -j10<cr>", opt)
+-- vim.keymap.set("n", "<F7>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("n", "<F9>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], {})
 -- vim.keymap.set("n", "<C-!>", ":%s/", opt)
@@ -255,7 +288,7 @@ vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], opt)
 vim.keymap.set("n", "<leader>zh", [[:%s/<c-r><c-w>/<c-r><c-w>/g]], opt)
 vim.keymap.set("n", "<leader>zc", ":Telescope grep_string<cr>", opt)
 -- vim.keymap.set("n", "<leader>ff", ":Telescope git_files<cr>", opt)
-vim.keymap.set("n", "<leader><leader>", ":Telescope git_files<cr>", opt)
+vim.keymap.set("n", "<leader><leader>", ":Telescope find_files no_ignore=false<cr>", opt)
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
 -- vim.keymap.set("n", "<leader>fg", ":Telescope find_files hidden=true no_ignore=true<cr>", opt)
 vim.keymap.set("n", "<leader>zm", "<cmd>Glow<cr>", opt)

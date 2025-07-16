@@ -4,7 +4,7 @@
 -- ##wrap preview with telescope
 vim.cmd([[autocmd User TelescopePreviewerLoaded setlocal wrap]])
 
-vim.o.autoread = true
+-- vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold" }, {
   pattern = "*",
   command = "checktime",
@@ -16,6 +16,12 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
 })
 
 
+-- vim.api.nvim_create_autocmd("TextYankPost", {
+--   pattern = "*",
+--   callback = function()
+--     vim.cmd("normal! `[v`]=")
+--   end,
+-- })
 -- # force l'écriture des shada qui plante tout le temps
 -- vim.api.nvim_create_autocmd("VimLeave", {
 --   pattern = "*",
