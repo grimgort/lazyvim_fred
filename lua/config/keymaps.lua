@@ -25,7 +25,7 @@ end
 
 
 vim.keymap.set("v", "<A-g>", ":RipSubstitute<CR>")
-vim.keymap.set("n", "<A-g>", ":.RipSubstitute<CR>")
+vim.keymap.set("n", "<A-g>", ":RipSubstitute<CR>")
 
 vim.keymap.set("n", "<space>bb", ":lua require('arena').toggle()<CR>")
 
@@ -72,6 +72,19 @@ vim.api.nvim_set_keymap('n', '<space>xX', '', {
 -- end
 --
 -- -- Exécuter la fonction de remapping
+-- vim.keymap.set("n", "gd", function()
+--   vim.lsp.buf.definition({
+--     reuse_win = true, -- 👈 force la réutilisation de la fenêtre courante
+--   })
+-- end, { desc = "Aller à la définition dans le buffer courant" })
+-- vim.keymap.set("n", "gh", function()
+--   vim.lsp.buf.declaration({
+--     reuse_win = true, -- 👈 force la réutilisation de la fenêtre courante
+--   })
+-- end, { desc = "Aller à la définition dans le buffer courant" })
+
+vim.keymap.set("n", "gs", "<cmd>Telescope lsp_definitions<cr>")
+-- vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>")
 
 vim.keymap.set("v", "<C-c>", "y`]", { noremap = true })
 vim.keymap.set("n", "<C-v>", "P", {})

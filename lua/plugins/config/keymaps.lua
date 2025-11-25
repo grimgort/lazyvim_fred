@@ -7,12 +7,26 @@
 -- vim.keymap.set("n", "<leader>ee", ":Neotree toggle<CR>", { noremap = false, silent = true })
 -- vim.keymap.set("n", "<leader>ef", ":Neotree toggle reveal<CR>", { noremap = false, silent = true })
 vim.keymap.set("n", "e", ":w<CR>", { noremap = false, silent = true })
-
--- vim.keymap.set("n", "gd", ":lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n,       "gd", "<cmd>Telescope lsp_definitions<cr>", desc = "Goto Definition", has = "definition" ),
+-- vim.api.nvim_set_keymap("n,       "gr", "<cmd>Telescope lsp_references<cr>", desc = "References" ),
+-- vim.api.nvim_set_keymap("n,       "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" ),
+-- vim.api.nvim_set_keymap("n,       "gI", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto Implementation" ),
+-- vim.api.nvim_set_keymap("n,       "gt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto Type Definition" ),
+-- vim.keymap.set("n", "gd", function()
+--   vim.lsp.buf.definition({
+--     reuse_win = true, -- 👈 force la réutilisation de la fenêtre courante
+--   })
+-- end, { desc = "Aller à la définition dans le buffer courant" })
+-- vim.keymap.set("n", "gh", function()
+--   vim.lsp.buf.declaration({
+--     reuse_win = true, -- 👈 force la réutilisation de la fenêtre courante
+--   })
+-- end, { desc = "Aller à la définition dans le buffer courant" })
+vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<cr>")
+vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>")
 -- vim.keymap.set("n", "gl", ":lua vim.lsp.buf.format({async=true})<CR>", { noremap = true, silent = true })
 -- vim.keymap.set("n", "gh", ":lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
 -- -- vim.keymap.set("n", "<space>m", ":lua vim.lsp.buf.rename()<CR>", { noremap = true, silent = true })
--- vim.keymap.set("n", "gr", ":lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true })
 -- vim.keymap.set("n", "gs", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { noremap = true, silent = true })
 -- vim.keymap.set("n", "gS", "<cmd>Telescope lsp_document_symbols<CR>", { noremap = true, silent = true })
 -- vim.keymap.set("n", "gk", ":lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })

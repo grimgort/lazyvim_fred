@@ -1,8 +1,41 @@
 return {
-
+  -- {
+  --   "folke/noice.nvim",
+  --   enabled = false,
+  -- },
+  {
+    -- fait crash sur windows
+    "mfussenegger/nvim-dap-python",
+    enabled = false,
+  },
+  {
+    "saghen/blink.compat",
+    -- use v2.* for blink.cmp v1.*
+    version = "2.*",
+    -- lazy.nvim will automatically load the plugin when it's required by blink.cmp
+    lazy = true,
+    -- make sure to set opts so that lazy.nvim calls blink.compat's setup
+    opts = {},
+  },
   {
     "saghen/blink.cmp",
+    dependencies = {
+      "hrsh7th/cmp-calc", -- la source de calcul
+    },
     opts = {
+      sources = {
+        default = { "lsp", "path", "snippets", "buffer", "calc" }, -- on rajoute "calc"
+        compat = {
+          "calc", -- important : indique que c’est une source nvim-cmp
+        },
+        providers = {
+          calc = {
+            name = "Calculator",
+            module = "blink.compat.source",
+            score_offset = 2, -- optionnel : priorité dans les suggestions
+          },
+        },
+      },
       completion = {
         trigger = {
           -- When false, will not show the completion window automatically when in a snippet
@@ -827,8 +860,13 @@ return {
     end,
     config = function()
       require("colorbox").setup({
-        filter = false,
-        background = nil,
+        -- filter = {
+        --   "primary",
+        --   function(color, spec)
+        --     return spec.github_stars >= 1000
+        --   end,
+        -- },
+        background = "light",
         policy = "shuffle",
         timing = "startup",
       })
@@ -1034,9 +1072,9 @@ return {
     optional = true,
     dependencies = {
       -- Ensure C/C++ debugger is installed
-      "williamboman/mason.nvim",
+      "mason-org/mason.nvim",
       optional = true,
-      opts = { ensure_installed = { "codelldb" } },
+      -- opts = { ensure_installed = { "codelldb" } },
     },
     -- config = function()
     -- local dap = require("dap")
@@ -1046,6 +1084,11 @@ return {
     -- end,
     opts = function()
       local dap = require("dap")
+      dap.adapters.godot = {
+        type = "server",
+        host = "127.0.0.1",
+        port = 6006,
+      }
       dap.adapters.cppdbg = {
         id = "cppdbg",
         type = "executable",
@@ -1159,6 +1202,38 @@ return {
   --   -- use opts = {} for passing setup options
   --   -- this is equivalent to setup({}) function
   -- },
+  -- LSP keymaps
+  -- {
+  --   "neovim/nvim-lspconfig",
+  --   opts = function()
+  --     local keys = require("lazyvim.plugins.lsp.keymaps").get()
+  --     local telescope = require("telescope.builtin")
+  --
+  --     -- Exemple d'override LazyVim
+  --     -- change a keymap
+  --     -- keys[#keys + 1] = { "K", "<cmd>echo 'hello'<cr>" }
+  --     -- -- disable a keymap
+  --     -- keys[#keys + 1] = { "K", false }
+  --     -- -- add a keymap
+  --     -- keys[#keys + 1] = { "H", "<cmd>echo 'hello'<cr>" }
+  --
+  --     -- ✅ remap gd -> Telescope definitions
+  --     keys[#keys + 1] = { "gd", telescope.lsp_definitions, desc = "Aller à la définition (Telescope)" }
+  --     -- keys[#keys + 1] = { "gr", telescope.lsp_references, desc = "Aller à la définition (Telescope)" }
+  --
+  --     -- keys[#keys + 1] = {
+  --     --   "gz",
+  --     --   function()
+  --     --     vim.lsp.buf.declaration({
+  --     --       reuse_win = true, -- 👈 force la réutilisation de la fenêtre courante
+  --     --     })
+  --     --   end,
+  --     --   desc = "Aller à la définition dans le buffer courant",
+  --     -- }
+  --     --
+  --     return keys
+  --   end,
+  -- },
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -1185,9 +1260,10 @@ return {
         clangd = {
           cmd = { "D:/Intel/compiler/latest/windows/bin-llvm/clangd", "--header-insertion=never" },
         },
-      -- gdscript = {
-      --   cmd = { "ncat", "localhost", "6005" },
-      -- },
+        gdscript = {
+          filetypes = { "gd", "gdscript", "gdscript3" },
+          -- cmd = { "ncat", "localhost", "6005" },
+        },
         -- neocmakelsp = {
         --   capabilities = {
         --     textDocument = {
@@ -1484,41 +1560,41 @@ return {
   --     require("pqf").setup()
   --   end,
   -- },
-    -- {'kevinhwang91/nvim-bqf'},
-{
-  "olimorris/codecompanion.nvim",
-  config = function()
-    require("codecompanion").setup()
-  end,
-  opts = {
-    adapter = "ollama",
-    adapters = {
-      ollama = {
-        endpoint = "http://localhost:11434/api/generate",
-        model = "llama3",
-        -- parameters = {
-        --   temperature = 0.7,
-        --   stream = false,
-        -- },
+  -- {'kevinhwang91/nvim-bqf'},
+  {
+    "olimorris/codecompanion.nvim",
+    config = function()
+      require("codecompanion").setup()
+    end,
+    opts = {
+      adapter = "ollama",
+      adapters = {
+        ollama = {
+          endpoint = "http://localhost:11434/api/generate",
+          model = "llama3",
+          -- parameters = {
+          --   temperature = 0.7,
+          --   stream = false,
+          -- },
+        },
       },
     },
+    requires = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
   },
-  requires = {
-    "nvim-lua/plenary.nvim",
-    "nvim-treesitter/nvim-treesitter",
-  }
-},
--- {
---   'stevearc/quicker.nvim',
---   event = "FileType qf",
---   ---@module "quicker"
---   ---@type quicker.SetupOptions
---   opts = {},
--- config = function()
---       require("quicker").setup()
---     end,
--- },
-    
+  -- {
+  --   'stevearc/quicker.nvim',
+  --   event = "FileType qf",
+  --   ---@module "quicker"
+  --   ---@type quicker.SetupOptions
+  --   opts = {},
+  -- config = function()
+  --       require("quicker").setup()
+  --     end,
+  -- },
+
   -- {
   --   'stevearc/quicker.nvim',
   --   event = "FileType qf",
@@ -1545,5 +1621,4 @@ return {
   --   end,
   --   event = { "BufReadPre", "BufNewFile" },
   -- },
-
 }
