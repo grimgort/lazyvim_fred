@@ -16,6 +16,38 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
 })
 
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "gdscript",
+  callback = function()
+    vim.keymap.set("n", "<F4>", function()
+      vim.cmd(":OverseerShell Godot_v4.4.1-stable_win64.exe .")
+    end, { buffer = true, desc = "Run GDScript in Godot" })
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "gdscript",
+  callback = function()
+    vim.keymap.set("n", "<F5>", function()
+      vim.system({ "pwsh", "run_debug_online.ps1" }, {
+        text = true,
+      }, function(result)
+        -- facultatif : affiche la sortie dans une fenêtre flottante
+        vim.schedule(function()
+          vim.notify(result.stdout or "Done", vim.log.levels.INFO)
+        end)
+      end)
+    end, { buffer = true, desc = "Run GDScript in Godot" })
+  end,
+})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "gdscript",
+--   callback = function()
+--     vim.keymap.set("n", "<F5>", function()
+--       vim.cmd(":OverseerShell pwsh run_debug_online.ps1")
+--     end, { buffer = true, desc = "Run GDScript in Godot" })
+--   end,
+-- })
 -- vim.api.nvim_create_autocmd("TextYankPost", {
 --   pattern = "*",
 --   callback = function()
@@ -87,3 +119,4 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
 --     teardown_dap_ui_keymaps()
 --   end,
 -- })
+--

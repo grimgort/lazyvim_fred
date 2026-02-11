@@ -339,6 +339,7 @@ return {
         fish = { "fish_indent" },
         sh = { "shfmt" },
         cmake = { "gersemi" },
+        gdscript = { "gdformat" },
       },
     },
   },
@@ -860,12 +861,12 @@ return {
     end,
     config = function()
       require("colorbox").setup({
-        -- filter = {
-        --   "primary",
-        --   function(color, spec)
-        --     return spec.github_stars >= 1000
-        --   end,
-        -- },
+        filter = {
+          "primary",
+          function(color, spec)
+            return spec.github_stars >= 100
+          end,
+        },
         background = "light",
         policy = "shuffle",
         timing = "startup",
@@ -1067,6 +1068,41 @@ return {
       },
     },
   },
+  -- {
+  --   "lommix/godot.nvim",
+  --   lazy = true,
+  --   cmd = { "GodotDebug", "GodotBreakAtCursor", "GodotStep", "GodotQuit", "GodotContinue" },
+  --
+  --   config = function()
+  --     require("godot").setup({
+  --       -- Path to your Godot executable
+  --       bin = "godot",
+  --
+  --       -- DAP configuration
+  --       dap = {
+  --         host = "127.0.0.1",
+  --         port = 6006,
+  --       },
+  --
+  --       -- GUI settings for console (passed to nvim_open_win)
+  --       gui = {
+  --         console_config = {
+  --           anchor = "SW",
+  --           border = "double",
+  --           col = 1,
+  --           height = 10,
+  --           relative = "editor",
+  --           row = 99999,
+  --           style = "minimal",
+  --           width = 99999,
+  --         },
+  --       },
+  --
+  --       -- Expose user commands automatically (optional)
+  --       expose_commands = true,
+  --     })
+  --   end,
+  -- },
   {
     "mfussenegger/nvim-dap",
     optional = true,
@@ -1089,10 +1125,32 @@ return {
         host = "127.0.0.1",
         port = 6006,
       }
-      dap.adapters.cppdbg = {
-        id = "cppdbg",
-        type = "executable",
-        command = "/absolute/path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+      -- dap.adapters.cppdbg = {
+      --   id = "cppdbg",
+      --   type = "executable",
+      --   command = "/absolute/path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+      -- }
+      dap.configurations.gdscript = {
+        {
+          type = "godot",
+          request = "launch",
+          name = "Launch scene",
+          project = "${workspaceFolder}",
+          launch_scene = true,
+        address="127.0.0.1",
+        port="6007",
+        profiling="false",
+        single_threaded_scene="false",
+        debug_collisions="false",
+        debug_paths="false",
+        debug_navigation="false",
+        debug_avoidance="false",
+        debug_stringnames="false",
+        frame_delay="0",
+        time_scale="1.0",
+        disable_vsync="false",
+        fixed_fps="60",
+        },
       }
       if not dap.adapters["codelldb"] then
         require("dap").adapters["codelldb"] = {
@@ -1262,7 +1320,7 @@ return {
         },
         gdscript = {
           filetypes = { "gd", "gdscript", "gdscript3" },
-          -- cmd = { "ncat", "localhost", "6005" },
+          --   -- cmd = { "ncat", "localhost", "6005" },
         },
         -- neocmakelsp = {
         --   capabilities = {
@@ -1366,41 +1424,41 @@ return {
   --     require("lsp_signature").setup(opts)
   --   end,
   -- },
+    {
+        "igorlfs/nvim-dap-view",
+        ---@module 'dap-view'
+        ---@type dapview.Config
+    opts = {
+        auto_toggle = true,  -- ouverture/fermeture automatique à l'init et à la fin du debug
+    },
+    },
   {
-    "rcarriga/nvim-dap-ui",
-    dependencies = { "nvim-neotest/nvim-nio" },
+  "rcarriga/nvim-dap-ui",
+  dependencies = { "nvim-neotest/nvim-nio" },
   -- stylua: ignore
   -- keys = {
   --   { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
-  --   { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
+  --   { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "x"} },
   -- },
-    opts = {},
-    -- config = function(_, opts)
-    --   require("dapui").setup({
-    --     layouts = {
-    --       {
-    --         elements = {
-    --           -- Ajoutez ici les éléments que vous voulez afficher, sans "repl"
-    --           { id = "scopes", size = 0.3 },
-    --           { id = "breakpoints", size = 0.2 },
-    --           { id = "stacks", size = 0.25 },
-    --           { id = "watches", size = 0.25 },
-    --         },
-    --         size = 40,
-    --         position = "left",
-    --       },
-    --       {
-    --         elements = {
-    --           -- Ne pas inclure "console" ici pour éviter d'afficher le terminal
-    --           { id = "repl", size = 1.0 },
-    --         },
-    --         size = 10,
-    --         position = "bottom",
-    --       },
-    --     },
-    --   })
-    -- end,
-  },
+  -- opts = {},
+  config = function(_, opts)
+  local dap = require("dap")
+  local dapui = require("dapui")
+  dapui.setup(opts)
+  dap.listeners.after.event_initialized["dapui_config"] = function()
+    -- dapui.open({})
+                -- require("dap-view").open()
+  end
+  dap.listeners.before.event_terminated["dapui_config"] = function()
+    dapui.close({})
+                require("dap-view").close()
+  end
+  dap.listeners.before.event_exited["dapui_config"] = function()
+    dapui.close({})
+                require("dap-view").close()
+  end
+  end,
+},
   {
     "folke/snacks.nvim",
     --     config = function()

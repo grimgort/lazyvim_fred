@@ -262,9 +262,80 @@ vim.keymap.set("n", "<leader>dq", "<cmd>e ./.vscode/launch.json<CR>", { silent =
 -- vim.keymap.set("n", "<F6>", ":Task start cmake build_all -j10 --config Release<cr>", opt)
 -- vim.keymap.set("n", "<F7>", ":Task start cmake build_all -j10 <cr>", opt)
 
-vim.keymap.set("n", "<F5>", ":AsyncRun cmake -S . -B build<cr>", opt)
-vim.keymap.set("n", "<F6>", ":AsyncRun cmake --build build --config Release -j10<cr>", opt)
-vim.keymap.set("n", "<F7>", ":AsyncRun cmake --build build --config Debug -j10<cr>", opt)
+local overseer = require("overseer")
+
+overseer.register_template({
+  name = "CMakeConfigure",
+  builder = function()
+    return {
+      cmd = { "cmake" },
+      args = { "-S", ".", "-B", "build" },
+      components = {
+        "default",
+        "on_output_quickfix",
+        "on_complete_notify",
+      },
+    }
+  end,
+})
+
+overseer.register_template({
+  name = "CMakeBuildRelease",
+  builder = function()
+    return {
+      cmd = { "cmake" },
+      args = {
+        "--build", "build",
+        "--config", "Release",
+        "-j10",
+      },
+      components = {
+        "default",
+        "on_output_quickfix",
+        "on_complete_notify",
+      },
+    }
+  end,
+})
+
+overseer.register_template({
+  name = "CMakeBuildDebug",
+  builder = function()
+    return {
+      cmd = { "cmake" },
+      args = {
+        "--build", "build",
+        "--config", "Debug",
+        "-j10",
+      },
+      components = {
+        "default",
+        "on_output_quickfix",
+        "on_complete_notify",
+      },
+    }
+  end,
+})
+local opt = { noremap = true, silent = true }
+
+local function run_template(name)
+  return function()
+    local running = overseer.list_tasks({ status = "RUNNING" })
+    if #running > 0 then
+      vim.notify("Une tâche est déjà en cours", vim.log.levels.WARN)
+      return
+    end
+    vim.cmd("OverseerRun " .. name)
+    vim.cmd("OverseerOpen")
+  end
+end
+
+vim.keymap.set("n", "<F5>", run_template("CMakeConfigure"), opt)
+vim.keymap.set("n", "<F6>", run_template("CMakeBuildRelease"), opt)
+vim.keymap.set("n", "<F7>", run_template("CMakeBuildDebug"), opt)
+-- vim.keymap.set("n", "<F5>", ":OverseerShell cmake -S . -B build<cr>", opt)
+-- vim.keymap.set("n", "<F6>", ":OverseerShell cmake --build build --config Release -j10<cr>", opt)
+-- vim.keymap.set("n", "<F7>", ":OverseerShell cmake --build build --config Debug -j10<cr>", opt)
 -- vim.keymap.set("n", "<F7>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("n", "<F9>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], {})
@@ -506,9 +577,18 @@ function QuitAllLua()
   if vim.fn.exists(":Neotest") == 2 then
     vim.cmd("Neotest summary close")
   end
+  if vim.fn.exists(":OverseerClose") == 2 then
+    vim.cmd("OverseerClose")
+  end
+
   -- vim.cmd("SymbolsOutlineClose")
   --[[ vim.cmd("Lspsaga close_floaterm") ]]
+    --
 
+    local ok, gf = pcall(require("grug-far").get_instance, 0)
+    if ok and gf then
+      gf:close()
+    end
   if vim.fn.exists(":FTerm") == 2 then
     require("FTerm").close()
   end
