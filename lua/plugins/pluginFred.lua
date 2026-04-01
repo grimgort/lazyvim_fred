@@ -626,7 +626,8 @@ return {
   -- {'ilyachur/cmake4vim'},
   {
     "Civitasv/cmake-tools.nvim",
-    enabled = true,
+    -- commit = "f34418d7aa57c730ee91b3e45e7612978506fcf3",
+    enabled = false,
     -- event = "VeryLazy",
     config = function()
       require("plugins.config.cmakeTool")
@@ -1130,26 +1131,33 @@ return {
       --   type = "executable",
       --   command = "/absolute/path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
       -- }
+
       dap.configurations.gdscript = {
+        {
+          type = "godot",
+          request = "attach",
+          name = "Attach to Godot",
+        },
+
         {
           type = "godot",
           request = "launch",
           name = "Launch scene",
           project = "${workspaceFolder}",
           launch_scene = true,
-        address="127.0.0.1",
-        port="6007",
-        profiling="false",
-        single_threaded_scene="false",
-        debug_collisions="false",
-        debug_paths="false",
-        debug_navigation="false",
-        debug_avoidance="false",
-        debug_stringnames="false",
-        frame_delay="0",
-        time_scale="1.0",
-        disable_vsync="false",
-        fixed_fps="60",
+          address = "127.0.0.1",
+          port = "6006",
+          profiling = "false",
+          single_threaded_scene = "false",
+          debug_collisions = "false",
+          debug_paths = "false",
+          debug_navigation = "false",
+          debug_avoidance = "false",
+          debug_stringnames = "false",
+          frame_delay = "0",
+          time_scale = "1.0",
+          disable_vsync = "false",
+          fixed_fps = "60",
         },
       }
       if not dap.adapters["codelldb"] then
@@ -1202,6 +1210,7 @@ return {
     end,
   },
   -- { "echasnovski/mini.pairs", enabled = false },
+  { "nvim-mini/mini.align", enabled = true, opts = {} },
   -- {
   --   "windwp/nvim-autopairs",
   --   event = "InsertEnter",
@@ -1424,17 +1433,17 @@ return {
   --     require("lsp_signature").setup(opts)
   --   end,
   -- },
-    {
-        "igorlfs/nvim-dap-view",
-        ---@module 'dap-view'
-        ---@type dapview.Config
-    opts = {
-        auto_toggle = true,  -- ouverture/fermeture automatique à l'init et à la fin du debug
-    },
-    },
   {
-  "rcarriga/nvim-dap-ui",
-  dependencies = { "nvim-neotest/nvim-nio" },
+    "igorlfs/nvim-dap-view",
+    ---@module 'dap-view'
+    ---@type dapview.Config
+    opts = {
+      auto_toggle = true, -- ouverture/fermeture automatique à l'init et à la fin du debug
+    },
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "nvim-neotest/nvim-nio" },
   -- stylua: ignore
   -- keys = {
   --   { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
@@ -1458,7 +1467,7 @@ return {
                 require("dap-view").close()
   end
   end,
-},
+  },
   {
     "folke/snacks.nvim",
     --     config = function()
@@ -1679,4 +1688,97 @@ return {
   --   end,
   --   event = { "BufReadPre", "BufNewFile" },
   -- },
+  { "HawkinsT/pathfinder.nvim" },
+  -- {
+  --   "inhesrom/remote-ssh.nvim",
+  --   branch = "master",
+  --   dependencies = {
+  --     "inhesrom/telescope-remote-buffer", --See https://github.com/inhesrom/telescope-remote-buffer for features
+  --     "nvim-telescope/telescope.nvim",
+  --     "nvim-lua/plenary.nvim",
+  --     "neovim/nvim-lspconfig",
+  --     -- nvim-notify is recommended, but not necessarily required into order to get notifcations during operations - https://github.com/rcarriga/nvim-notify
+  --     "rcarriga/nvim-notify",
+  --   },
+  --   config = function()
+  --     require("telescope-remote-buffer").setup(
+  --       -- Default keymaps to open telescope and search open buffers including "remote" open buffers
+  --       --fzf = "<leader>fz",
+  --       --match = "<leader>gb",
+  --       --oldfiles = "<leader>rb"
+  --     )
+  --
+  --     -- setup lsp_config here or import from part of neovim config that sets up LSP
+  --
+  --     require("remote-ssh").setup({
+  --       on_attach = lsp_config.on_attach,
+  --       capabilities = lsp_config.capabilities,
+  --       filetype_to_server = lsp_config.filetype_to_server,
+  --     })
+  --   end,
+  -- },
+{
+  "StackInTheWild/headhunter.nvim",
+  config = function()
+    require("headhunter").setup()
+  end,
+},
+{
+  "spacedentist/resolve.nvim",
+  event = { "BufReadPre", "BufNewFile" },
+  opts = {},
+},
+{
+  "josephburgess/nvumi",
+  dependencies = { "folke/snacks.nvim" },
+  opts = {
+    virtual_text = "newline", -- or "inline"
+    prefix = " 🚀 ", -- prefix shown before the output
+    date_format = "iso", -- or: "uk", "us", "long"
+    keys = {
+      run = "<CR>", -- run/refresh calculations
+      reset = "R", -- reset buffer
+      yank = "<leader>y", -- yank output of current line
+      yank_all = "<leader>Y", -- yank all outputs
+    },
+    -- see below for more on custom conversions/functions
+    custom_conversions = {},
+    custom_functions = {}
+  }
+},
+{
+    "Redoxahmii/json-to-types.nvim",
+    build = "sh install.sh npm", -- Replace `npm` with your preferred package manager (e.g., yarn, pnpm).
+    ft = "json",
+    keys = {
+      {
+        "<leader>cU",
+        "<CMD>ConvertJSONtoLang typescript<CR>",
+        desc = "Convert JSON to TS",
+      },
+      {
+        "<leader>ct",
+        "<CMD>ConvertJSONtoLangBuffer typescript<CR>",
+        desc = "Convert JSON to TS Buffer",
+      },
+    },
+  },
+{
+    "XXiaoA/atone.nvim",
+    cmd = "Atone",
+    opts = {}, -- your configuration here
+},
+
+    {
+      'saghen/blink.indent',
+      --- @module 'blink.indent'
+      --- @type blink.indent.Config
+      -- opts = {},
+    },
+{
+  "necrom4/calcium.nvim",
+  cmd = { "Calcium" },
+  opts = {}
+},
+
 }

@@ -39,7 +39,13 @@ vim.api.nvim_set_keymap('n', '<space>xX', '', {
     end
   end
 })
-
+-- compile avec maven avant dap java
+local dap = require("dap")
+dap.listeners.before.launch["java-maven-compile"] = function(session, body)
+  if session.config.type == "java" then
+    vim.fn.system("mvn compile -f matisse_IU/pom.xml")
+  end
+end
 -- Use this to toggle gitui in a floating terminal
 -- vim.keymap.set('n', '<A-g>', function()
 --     gitui:toggle()
@@ -318,13 +324,52 @@ overseer.register_template({
 })
 local opt = { noremap = true, silent = true }
 
+-- local function run_template(name)
+--   return function()
+--     local running = overseer.list_tasks({ status = "RUNNING" })
+--     if #running > 0 then
+--       vim.notify("Une tâche est déjà en cours", vim.log.levels.WARN)
+--       return
+--     end
+--     vim.cmd("OverseerRun " .. name)
+--     vim.cmd("OverseerOpen")
+--   end
+-- end
+-- Fonction utilitaire qui renvoie une closure pour exécuter un template Overseer
 local function run_template(name)
   return function()
+    -- 1️⃣  Vérifier s’il y a déjà une tâche en cours
     local running = overseer.list_tasks({ status = "RUNNING" })
     if #running > 0 then
-      vim.notify("Une tâche est déjà en cours", vim.log.levels.WARN)
+      -- Une tâche tourne déjà → on ne notifie pas, on tente de relancer la
+      -- dernière tâche terminée (SUCCESS / FAILURE / CANCELED).
+
+      -- 2️⃣  Récupérer toutes les tâches terminées
+      local finished = overseer.list_tasks({
+        status = { "SUCCESS", "FAILURE", "CANCELED" }   -- tous les états terminés
+      })
+
+      if #finished > 0 then
+        -- 3️⃣  Trier manuellement du plus récent au plus ancien
+        table.sort(finished, function(a, b)
+          -- `a.start_time` / `b.start_time` sont des timestamps (seconds depuis epoch)
+          -- Si votre version d’Overseer expose `a.start` ou `a.created`, adaptez le champ.
+          return a.time_start> b.time_start
+        end)
+
+        -- 4️⃣  Relancer la tâche la plus récente
+        local last = finished[1]          -- tâche la plus récente
+        overseer.run_action(last.id, "restart")
+        vim.cmd("OverseerOpen")           -- afficher la fenêtre d’Overseer
+      else
+        -- Aucun historique → on lance le template demandé
+        vim.cmd("OverseerRun " .. name)
+        vim.cmd("OverseerOpen")
+      end
       return
     end
+
+    -- 5️⃣  Aucun job en cours → lancer le template habituel
     vim.cmd("OverseerRun " .. name)
     vim.cmd("OverseerOpen")
   end

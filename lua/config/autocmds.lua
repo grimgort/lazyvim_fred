@@ -40,6 +40,22 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { buffer = true, desc = "Run GDScript in Godot" })
   end,
 })
+
+
+vim.api.nvim_create_autocmd("BufReadPost", {
+  callback = function()
+    local max = 10000
+    for i = 1, math.min(100, vim.fn.line("$")) do
+      if #vim.fn.getline(i) > max then
+        vim.opt_local.wrap = false
+        break
+      end
+    end
+  end,
+})
+
+
+
 -- vim.api.nvim_create_autocmd("FileType", {
 --   pattern = "gdscript",
 --   callback = function()
