@@ -1433,22 +1433,64 @@ return {
   --     require("lsp_signature").setup(opts)
   --   end,
   -- },
-  {
-    "igorlfs/nvim-dap-view",
-    ---@module 'dap-view'
-    ---@type dapview.Config
-    opts = {
-      auto_toggle = true, -- ouverture/fermeture automatique à l'init et à la fin du debug
-    },
-  },
+  -- {
+  --   "igorlfs/nvim-dap-view",
+  --   ---@module 'dap-view'
+  --   ---@type dapview.Config
+  --   opts = {
+  --     auto_toggle = true, -- ouverture/fermeture automatique à l'init et à la fin du debug
+  --     winbar = {
+  --       show = true,
+  --       -- You can add a "console" section to merge the terminal with the other views
+  --       sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl" },
+  --       -- Must be one of the sections declared above
+  --       default_section = "watches",
+  --       -- Append hints with keymaps within the labels
+  --       show_keymap_hints = true,
+  --       -- Configure each section individually
+  --       base_sections = {
+  --         -- Labels can be set dynamically with functions
+  --         -- Each function receives the window's width and the current section as arguments
+  --         breakpoints = { label = "Breakpoints", keymap = "B" },
+  --         scopes = { label = "Scopes", keymap = "S" },
+  --         exceptions = { label = "Exceptions", keymap = "E" },
+  --         watches = { label = "Watches", keymap = "W" },
+  --         threads = { label = "Threads", keymap = "T" },
+  --         repl = { label = "REPL", keymap = "R" },
+  --         sessions = { label = "Sessions", keymap = "K" },
+  --         console = { label = "Console", keymap = "C" },
+  --       },
+  --       -- Add your own sections
+  --       custom_sections = {},
+  --       controls = {
+  --         enabled = false,
+  --         position = "right",
+  --         buttons = {
+  --           "play",
+  --           "step_into",
+  --           "step_over",
+  --           "step_out",
+  --           "step_back",
+  --           "run_last",
+  --           "terminate",
+  --           "disconnect",
+  --         },
+  --         custom_buttons = {},
+  --       },
+  --     },
+  --   },
+  -- },
   {
     "rcarriga/nvim-dap-ui",
     dependencies = { "nvim-neotest/nvim-nio" },
   -- stylua: ignore
-  -- keys = {
-  --   { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
-  --   { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "x"} },
-  -- },
+  keys = {
+    { "J", function() require("dap").step_over() end, desc = "Step Over", mode="n" },
+    { "I", function() require("dap").step_into() end, desc = "Step Into", mode="n" },
+    { "H", function() require("dap").step_out() end, desc = "Step Out", mode="n" },
+    { "L", function() require("dap").continue() end, desc = "Continue/Start", mode="n" },
+    -- { "G", function() require("dap").run_to_cursor() end, desc = "run_to_cursor", mode="n" },
+  },
   -- opts = {},
   config = function(_, opts)
   local dap = require("dap")
@@ -1460,11 +1502,11 @@ return {
   end
   dap.listeners.before.event_terminated["dapui_config"] = function()
     dapui.close({})
-                require("dap-view").close()
+                -- require("dap-view").close()
   end
   dap.listeners.before.event_exited["dapui_config"] = function()
     dapui.close({})
-                require("dap-view").close()
+                -- require("dap-view").close()
   end
   end,
   },
@@ -1717,36 +1759,36 @@ return {
   --     })
   --   end,
   -- },
-{
-  "StackInTheWild/headhunter.nvim",
-  config = function()
-    require("headhunter").setup()
-  end,
-},
-{
-  "spacedentist/resolve.nvim",
-  event = { "BufReadPre", "BufNewFile" },
-  opts = {},
-},
-{
-  "josephburgess/nvumi",
-  dependencies = { "folke/snacks.nvim" },
-  opts = {
-    virtual_text = "newline", -- or "inline"
-    prefix = " 🚀 ", -- prefix shown before the output
-    date_format = "iso", -- or: "uk", "us", "long"
-    keys = {
-      run = "<CR>", -- run/refresh calculations
-      reset = "R", -- reset buffer
-      yank = "<leader>y", -- yank output of current line
-      yank_all = "<leader>Y", -- yank all outputs
+  {
+    "StackInTheWild/headhunter.nvim",
+    config = function()
+      require("headhunter").setup()
+    end,
+  },
+  {
+    "spacedentist/resolve.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {},
+  },
+  {
+    "josephburgess/nvumi",
+    dependencies = { "folke/snacks.nvim" },
+    opts = {
+      virtual_text = "newline", -- or "inline"
+      prefix = " 🚀 ", -- prefix shown before the output
+      date_format = "iso", -- or: "uk", "us", "long"
+      keys = {
+        run = "<CR>", -- run/refresh calculations
+        reset = "R", -- reset buffer
+        yank = "<leader>y", -- yank output of current line
+        yank_all = "<leader>Y", -- yank all outputs
+      },
+      -- see below for more on custom conversions/functions
+      custom_conversions = {},
+      custom_functions = {},
     },
-    -- see below for more on custom conversions/functions
-    custom_conversions = {},
-    custom_functions = {}
-  }
-},
-{
+  },
+  {
     "Redoxahmii/json-to-types.nvim",
     build = "sh install.sh npm", -- Replace `npm` with your preferred package manager (e.g., yarn, pnpm).
     ft = "json",
@@ -1763,22 +1805,21 @@ return {
       },
     },
   },
-{
+  {
     "XXiaoA/atone.nvim",
     cmd = "Atone",
     opts = {}, -- your configuration here
-},
+  },
 
-    {
-      'saghen/blink.indent',
-      --- @module 'blink.indent'
-      --- @type blink.indent.Config
-      -- opts = {},
-    },
-{
-  "necrom4/calcium.nvim",
-  cmd = { "Calcium" },
-  opts = {}
-},
-
+  {
+    "saghen/blink.indent",
+    --- @module 'blink.indent'
+    --- @type blink.indent.Config
+    -- opts = {},
+  },
+  {
+    "necrom4/calcium.nvim",
+    cmd = { "Calcium" },
+    opts = {},
+  },
 }

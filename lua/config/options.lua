@@ -29,9 +29,13 @@ vim.g.neovide_floating_blur_amount_x = 0
 vim.g.neovide_floating_blur_amount_y = 0
 vim.g.neovide_hide_mouse_when_typing = false
 vim.g.neovide_cursor_vfx_mode = ""
+
+    -- vim.o.guifont = "JetBrains Mono:h13"
 else
-  vim.o.guifont = "JetBrains Mono:h13"
+  -- vim.o.guifont = "JetBrains Mono:h13"
 end
+
+
 -- vim.o.guifont = "Source Code Pro:h14" -- text below applies for VimScript
 
 --disable default neovim colorshema
@@ -54,6 +58,7 @@ vim.opt.writebackup = false
 vim.o.shiftwidth = 4
 vim.o.tabstop = 4
 
+vim.opt.termguicolors = true
 -- local default_options = {
 --    backup = false, -- creates a backup file
 --    clipboard = "unnamedplus", -- allows neovim to access the system clipboard
