@@ -777,3 +777,11 @@ end, {
 -- -- Pour C/C++
 -- dap.configurations.c = dap.configurations.cpp
 -- dap.configurations.rust = dap.configurations.cpp
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "gitcommit",
+  callback = function()
+    vim.keymap.set("n", "<leader>ai",
+      ":0r !git diff --cached | cline -y<CR>",
+      { buffer = true, desc = "Message de commit par IA" })
+  end,
+})

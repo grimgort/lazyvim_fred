@@ -1822,4 +1822,18 @@ return {
     cmd = { "Calcium" },
     opts = {},
   },
+{
+  "carlos-algms/agentic.nvim",
+  event = "VeryLazy",
+  opts = {
+    -- Providers intégrés : "claude-agent-acp" | "gemini-acp" | "codex-acp" | "opencode-acp" | ...
+    provider = "claude-agent-acp",
+  },
+  -- Keymaps AZERTY : uniquement des lettres derrière <leader> (espace),
+  -- aucune touche nécessitant AltGr ([ ] { } \ | ~ # @)
+  keys = {
+    { "<leader>aa", function() require("agentic").toggle() end, mode = { "n", "v" }, desc = "Agentic : ouvrir/fermer le chat" },
+    { "<leader>ao", function() require("agentic").open() end,   mode = { "n", "v" }, desc = "Agentic : ouvrir le chat" },
+    { "<leader>ax", function() require("agentic").close() end,  mode = "n",          desc = "Agentic : fermer le chat" },
+  },
 }
