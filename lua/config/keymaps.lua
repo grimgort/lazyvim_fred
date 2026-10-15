@@ -1,13 +1,13 @@
-local fterm = require("FTerm")
+-- local fterm = require("FTerm")
 
-local gitui = fterm:new({
-    ft = 'fterm_gitui', -- You can also override the default filetype, if you want
-    cmd = "pwsh",
-    dimensions = {
-        height = 0.9,
-        width = 0.9
-    }
-})
+-- local gitui = fterm:new({
+--     ft = 'fterm_gitui', -- You can also override the default filetype, if you want
+--     cmd = "pwsh",
+--     dimensions = {
+--         height = 0.9,
+--         width = 0.9
+--     }
+-- })
 
 function get_visual_selection()
   local s_start = vim.fn.getpos("'<")
@@ -175,8 +175,28 @@ vim.keymap.set(
 --   "[", -- Commande à exécuter (vous pouvez la remplacer par autre chose)
 --   { noremap = true, silent = true } -- Options
 -- )
-vim.keymap.set("n", "ç", '<CMD>lua require("FTerm").toggle()<CR>')
-vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
+-- vim.keymap.set("n", "ç", '<CMD>lua require("FTerm").toggle()<CR>')
+-- vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
+--
+
+
+vim.keymap.set("n", "ç", "<CMD>lua Snacks.terminal.toggle()<CR>")
+
+vim.keymap.set("t", "ç", "<C-\\><C-n><CMD>lua Snacks.terminal.toggle()<CR>", {
+  noremap = true,
+  silent = true,
+})
+
+
+vim.keymap.set("n", "ç", function()
+  Snacks.terminal()
+end, { silent = true, desc = "Toggle terminal" })
+
+vim.keymap.set("t", "ç", [[<C-\><C-n><Cmd>lua Snacks.terminal()<CR>]], {
+  noremap = true,
+  silent = true,
+  desc = "Toggle terminal",
+})
 
 vim.keymap.set("n", "<leader>nn", "<cmd>Telekasten find_notes<CR>", { noremap = true, silent = false })
 vim.keymap.set("n", "<leader>nb", "<cmd>Telekasten new_note<CR>", { noremap = true, silent = false })
@@ -634,9 +654,9 @@ function QuitAllLua()
     if ok and gf then
       gf:close()
     end
-  if vim.fn.exists(":FTerm") == 2 then
-    require("FTerm").close()
-  end
+  -- if vim.fn.exists(":FTerm") == 2 then
+  --   require("FTerm").close()
+  -- end
   --[[ :pclose ]]
   --[[   helpclose ]]
   --[[   ccl ]]

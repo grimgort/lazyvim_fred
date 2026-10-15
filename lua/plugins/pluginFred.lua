@@ -800,14 +800,7 @@ return {
   --       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
   --     }
   -- },
-  {
-    "numtostr/FTerm.nvim",
-    event = "BufEnter",
-    config = function()
-      require("plugins.config.fterm")
-    end,
-  },
-  {
+    {
     -- amongst your other plugins
     -- {'akinsho/toggleterm.nvim', version = "*", config = true}
     -- or
@@ -1510,82 +1503,58 @@ return {
   end
   end,
   },
-  {
-    "folke/snacks.nvim",
-    --     config = function()
-    --       require("snacks").setup({
-    --         dashboard = {
-    --           keys = {
-    --             { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-    --             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-    --             { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-    --             { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
-    --             {
-    --               icon = " ",
-    --               key = "c",
-    --               desc = "Config",
-    --               action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
-    --             },
-    --             { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-    --             { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-    --             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
-    --           },
-    --           header = [[
-    -- -- ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███
-    -- -- ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████
-    -- -- █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██
-    -- -- ██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██
-    -- -- ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██
-    -- --     ]],
-    --           sections = {
-    --             { section = "header" },
-    --             { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-    --             { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-    --             { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-    --             { section = "startup" },
-    --           },
-    --         },
-    --       })
-    --     end,
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-      bigfile = { enabled = true },
-      indent = { enabled = true },
-      dashboard = {
-        keys = {
-          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-          { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
-          {
-            icon = " ",
-            key = "c",
-            desc = "Config",
-            action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
-          },
-          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-          { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+{
+  "folke/snacks.nvim",
+  opts = {
+    bigfile = { enabled = true },
+    indent = { enabled = true },
+
+    terminal = {
+      enabled = true,
+      shell = "pwsh.exe",
+      win = {
+        position = "float",
+        border = "rounded",
+        width = 0.85,
+        height = 0.8,
+      },
+    },
+
+    dashboard = {
+      keys = {
+        { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+        { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+        { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+        { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+        {
+          icon = " ",
+          key = "c",
+          desc = "Config",
+          action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
         },
-        header = [[
- -- ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███ 
- -- ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████ 
- -- █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██ 
- -- ██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██ 
- -- ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██ 
- --     ]],
-        sections = {
-          { section = "header" },
-          { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-          { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-          { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-          { section = "startup" },
-        },
+        { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+        { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+        { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+      },
+
+      header = [[
+ ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███
+ ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████
+ █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██
+ ██      ██   ██ ██      ██   ██     ██  ██ ██ ██      ██    ██  ██  ██  ██ ██  ██  ██
+ ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██
+]],
+
+      sections = {
+        { section = "header" },
+        { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+        { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+        { section = "startup" },
       },
     },
   },
+},
   -- { "dam9000/classic-copy-paste.nvim" },
   --
   -- {
@@ -1836,4 +1805,5 @@ return {
     { "<leader>ao", function() require("agentic").open() end,   mode = { "n", "v" }, desc = "Agentic : ouvrir le chat" },
     { "<leader>ax", function() require("agentic").close() end,  mode = "n",          desc = "Agentic : fermer le chat" },
   },
+}
 }
