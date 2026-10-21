@@ -624,15 +624,15 @@ return {
   },
 
   -- {'ilyachur/cmake4vim'},
-  {
-    "Civitasv/cmake-tools.nvim",
-    -- commit = "f34418d7aa57c730ee91b3e45e7612978506fcf3",
-    enabled = false,
-    -- event = "VeryLazy",
-    config = function()
-      require("plugins.config.cmakeTool")
-    end,
-  },
+  -- {
+  --   "Civitasv/cmake-tools.nvim",
+  --   -- commit = "f34418d7aa57c730ee91b3e45e7612978506fcf3",
+  --   enabled = false,
+  --   -- event = "VeryLazy",
+  --   config = function()
+  --     require("plugins.config.cmakeTool")
+  --   end,
+  -- },
   {
     "nvim-telekasten/telekasten.nvim",
     -- event = "VeryLazy",
@@ -800,7 +800,7 @@ return {
   --       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
   --     }
   -- },
-    {
+  {
     -- amongst your other plugins
     -- {'akinsho/toggleterm.nvim', version = "*", config = true}
     -- or
@@ -840,27 +840,26 @@ return {
   },
   {
     "linrongbin16/colorbox.nvim",
-
-    -- don't lazy load
     lazy = false,
-
-    -- load with highest priority
     priority = 1000,
 
-    -- required by 'mcchrish/zenbones.nvim'
-    dependencies = "rktjmp/lush.nvim",
+    dependencies = {
+      "rktjmp/lush.nvim",
+    },
 
     build = function()
       require("colorbox").update()
     end,
+
     config = function()
       require("colorbox").setup({
         filter = {
           "primary",
           function(color, spec)
-            return spec.github_stars >= 100
+            return type(spec) == "table" and type(spec.github_stars) == "number" and spec.github_stars >= 100
           end,
         },
+
         background = "light",
         policy = "shuffle",
         timing = "startup",
@@ -938,7 +937,6 @@ return {
       dap_config = {
         type = "codelldb",
         request = "launch",
-        stopAtEntry = true,
         expressions = "native",
         -- setupCommands = {
         -- 	{
@@ -1101,37 +1099,77 @@ return {
     "mfussenegger/nvim-dap",
     optional = true,
     dependencies = {
-      -- Ensure C/C++ debugger is installed
       "mason-org/mason.nvim",
       optional = true,
-      -- opts = { ensure_installed = { "codelldb" } },
     },
-    -- config = function()
-    -- local dap = require("dap")
-    -- dap.defaults.fallback.terminal_win_cmd = "tabnew"
-    -- dap.defaults.python.terminal_win_cmd = "belowright new"
-    -- dap.defaults.fallback.force_external_terminal = true
-    -- end,
+
     opts = function()
       local dap = require("dap")
+
       dap.adapters.godot = {
         type = "server",
         host = "127.0.0.1",
         port = 6006,
       }
-      -- dap.adapters.cppdbg = {
-      --   id = "cppdbg",
-      --   type = "executable",
-      --   command = "/absolute/path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
-      -- }
 
+      local cpptools = vim.fn.stdpath("data") .. "/mason/packages/cpptools/extension/debugAdapters/bin/OpenDebugAD7.exe"
+
+      dap.adapters.cppdbg = {
+        id = "cppdbg",
+        type = "executable",
+        command = cpptools,
+        options = { detached = false },
+      }
+
+      dap.adapters.cppvsdbg = {
+        id = "cppvsdbg",
+        type = "executable",
+        command = cpptools,
+        options = { detached = false },
+      }
+
+      if not dap.adapters.codelldb then
+        dap.adapters.codelldb = {
+          type = "server",
+          host = "localhost",
+          port = "${port}",
+          executable = {
+            command = "codelldb",
+            args = { "--port", "${port}" },
+            expressions = "native",
+            commandCompletions = true,
+          },
+        }
+      end
+
+      -- Watchpoint : afficher la cause et les identifiants lors d'un arrêt.
+      dap.listeners.after.event_stopped["watchpoint_info"] = function(session, body)
+        if body.reason ~= "data breakpoint" then
+          return
+        end
+
+        local ids = body.hitBreakpointIds or {}
+        local id_text = #ids > 0 and table.concat(ids, ", ") or "inconnu"
+
+        vim.schedule(function()
+          vim.notify(
+            ("Watchpoint déclenché\nID : %s\nDétail : %s"):format(
+              id_text,
+              body.text or "Aucun détail fourni par le débogueur"
+            ),
+            vim.log.levels.INFO,
+            { title = "CodeLLDB / nvim-dap" }
+          )
+        end)
+      end
+
+      -- Configurations Godot
       dap.configurations.gdscript = {
         {
           type = "godot",
           request = "attach",
           name = "Attach to Godot",
         },
-
         {
           type = "godot",
           request = "launch",
@@ -1153,21 +1191,8 @@ return {
           fixed_fps = "60",
         },
       }
-      if not dap.adapters["codelldb"] then
-        require("dap").adapters["codelldb"] = {
-          type = "server",
-          host = "localhost",
-          port = "${port}",
-          executable = {
-            command = "codelldb",
-            args = {
-              "--port",
-              "${port}",
-            },
-            expressions = "native",
-          },
-        }
-      end
+
+      -- Configurations C / C++
       for _, lang in ipairs({ "c", "cpp" }) do
         dap.configurations[lang] = {
           {
@@ -1317,9 +1342,9 @@ return {
             },
           },
         },
-        clangd = {
-          cmd = { "D:/Intel/compiler/latest/windows/bin-llvm/clangd", "--header-insertion=never" },
-        },
+        -- clangd = {
+        --   cmd = { "D:/Intel/compiler/latest/windows/bin-llvm/clangd", "--header-insertion=never" },
+        -- },
         gdscript = {
           filetypes = { "gd", "gdscript", "gdscript3" },
           --   -- cmd = { "ncat", "localhost", "6005" },
@@ -1484,60 +1509,60 @@ return {
     { "L", function() require("dap").continue() end, desc = "Continue/Start", mode="n" },
     -- { "G", function() require("dap").run_to_cursor() end, desc = "run_to_cursor", mode="n" },
   },
-  -- opts = {},
-  config = function(_, opts)
-  local dap = require("dap")
-  local dapui = require("dapui")
-  dapui.setup(opts)
-  dap.listeners.after.event_initialized["dapui_config"] = function()
-    -- dapui.open({})
-                -- require("dap-view").open()
-  end
-  dap.listeners.before.event_terminated["dapui_config"] = function()
-    dapui.close({})
-                -- require("dap-view").close()
-  end
-  dap.listeners.before.event_exited["dapui_config"] = function()
-    dapui.close({})
-                -- require("dap-view").close()
-  end
-  end,
+    -- opts = {},
+    config = function(_, opts)
+      local dap = require("dap")
+      local dapui = require("dapui")
+      dapui.setup(opts)
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        -- dapui.open({})
+        -- require("dap-view").open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close({})
+        -- require("dap-view").close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close({})
+        -- require("dap-view").close()
+      end
+    end,
   },
-{
-  "folke/snacks.nvim",
-  opts = {
-    bigfile = { enabled = true },
-    indent = { enabled = true },
+  {
+    "folke/snacks.nvim",
+    opts = {
+      bigfile = { enabled = true },
+      indent = { enabled = true },
 
-    terminal = {
-      enabled = true,
-      shell = "pwsh.exe",
-      win = {
-        position = "float",
-        border = "rounded",
-        width = 0.85,
-        height = 0.8,
-      },
-    },
-
-    dashboard = {
-      keys = {
-        { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-        { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-        { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-        { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
-        {
-          icon = " ",
-          key = "c",
-          desc = "Config",
-          action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+      terminal = {
+        enabled = true,
+        shell = "pwsh.exe",
+        win = {
+          position = "float",
+          border = "rounded",
+          width = 0.85,
+          height = 0.8,
         },
-        { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-        { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-        { icon = " ", key = "q", desc = "Quit", action = ":qa" },
       },
 
-      header = [[
+      dashboard = {
+        keys = {
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+          { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+          {
+            icon = " ",
+            key = "c",
+            desc = "Config",
+            action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+          },
+          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        },
+
+        header = [[
  ███████ ██████  ███████ ██████      ███    ██ ███████  ██████  ██    ██ ██ ███    ███
  ██      ██   ██ ██      ██   ██     ████   ██ ██      ██    ██ ██    ██ ██ ████  ████
  █████   ██████  █████   ██   ██     ██ ██  ██ █████   ██    ██ ██    ██ ██ ██ ████ ██
@@ -1545,16 +1570,16 @@ return {
  ██      ██   ██ ███████ ██████      ██   ████ ███████  ██████    ████   ██ ██      ██
 ]],
 
-      sections = {
-        { section = "header" },
-        { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-        { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-        { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-        { section = "startup" },
+        sections = {
+          { section = "header" },
+          { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+          { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+          { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+          { section = "startup" },
+        },
       },
     },
   },
-},
   -- { "dam9000/classic-copy-paste.nvim" },
   --
   -- {
@@ -1791,19 +1816,265 @@ return {
     cmd = { "Calcium" },
     opts = {},
   },
-{
-  "carlos-algms/agentic.nvim",
-  event = "VeryLazy",
-  opts = {
-    -- Providers intégrés : "claude-agent-acp" | "gemini-acp" | "codex-acp" | "opencode-acp" | ...
-    provider = "claude-agent-acp",
+  {
+    "yetone/avante.nvim",
+    build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+      or "make",
+    event = "VeryLazy",
+    version = false,
+
+    ---@module 'avante'
+    ---@type avante.Config
+    opts = {
+      instructions_file = "avante.md",
+      disabled_tools = {
+        "git_commit",
+      },
+      -- Utiliser Cline via ACP
+      provider = "cline-acp",
+
+      acp_providers = {
+        ["cline-acp"] = {
+          command = "cmd.exe",
+          args = {
+            "/d",
+            "/c",
+            "cline.cmd",
+            "--acp",
+          },
+          env = {
+            CLINE_PROVIDER = "openai-compatible",
+            CLINE_MODEL = "semia-vision",
+            CLINE_API_KEY = vim.trim(vim.fn.system({
+              "powershell.exe",
+              "-NoProfile",
+              "-Command",
+              "[Environment]::GetEnvironmentVariable('SEMIA_API_KEY', 'User')",
+            })),
+          },
+        },
+      },
+    },
+
+    keys = {
+      {
+        "<leader>al",
+        "<cmd>Avante acp modes<CR>",
+        mode = { "n", "v" },
+        desc = "Avante : changer Act/Plan mode",
+      },
+      {
+        "<leader>aa",
+        "<cmd>AvanteToggle<CR>",
+        mode = { "n", "v" },
+        desc = "Avante : ouvrir/fermer le chat",
+      },
+      {
+        "<leader>ao",
+        "<cmd>AvanteChat<CR>",
+        mode = { "n", "v" },
+        desc = "Avante : ouvrir le chat",
+      },
+      {
+        "<leader>ax",
+        "<cmd>AvanteStop<CR>",
+        mode = "n",
+        desc = "Avante : arrêter la génération",
+      },
+    },
+
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      {
+        "ColinKennedy/mega.cmdparse",
+        dependencies = { "ColinKennedy/mega.logging" },
+      },
+      "nvim-mini/mini.pick",
+      "nvim-telescope/telescope.nvim",
+      "hrsh7th/nvim-cmp",
+      "ibhagwan/fzf-lua",
+      "folke/snacks.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "zbirenbaum/copilot.lua",
+      {
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
   },
-  -- Keymaps AZERTY : uniquement des lettres derrière <leader> (espace),
-  -- aucune touche nécessitant AltGr ([ ] { } \ | ~ # @)
-  keys = {
-    { "<leader>aa", function() require("agentic").toggle() end, mode = { "n", "v" }, desc = "Agentic : ouvrir/fermer le chat" },
-    { "<leader>ao", function() require("agentic").open() end,   mode = { "n", "v" }, desc = "Agentic : ouvrir le chat" },
-    { "<leader>ax", function() require("agentic").close() end,  mode = "n",          desc = "Agentic : fermer le chat" },
+  {
+    -- CMake : configure, build et CTest
+    {
+      "Civitasv/cmake-tools.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      opts = {
+        cmake_use_preset = true,
+        cmake_regenerate_on_save = false,
+        ctest_command = "ctest",
+        ctest_show_labels = true,
+      },
+    },
+
+    -- Neotest + adaptateur CTest
+    {
+      "nvim-neotest/neotest",
+      dependencies = {
+        "nvim-neotest/nvim-nio",
+        "nvim-lua/plenary.nvim",
+        "orjangj/neotest-ctest",
+      },
+      config = function()
+        local neotest = require("neotest")
+
+        neotest.setup({
+          adapters = {
+            require("neotest-ctest").setup({
+              cmd = { "ctest" },
+            }),
+          },
+        })
+
+        -- Navigation et exécution des tests
+        vim.keymap.set("n", "<leader>ts", function()
+          neotest.summary.open()
+        end, { desc = "Tests : ouvrir le résumé" })
+
+        vim.keymap.set("n", "<leader>tt", function()
+          neotest.run.run()
+        end, { desc = "Tests : lancer le test courant" })
+
+        vim.keymap.set("n", "<leader>tT", function()
+          neotest.run.run(vim.fn.getcwd())
+        end, { desc = "Tests : lancer le projet" })
+
+        vim.keymap.set("n", "<leader>to", function()
+          neotest.output.open({ enter = true })
+        end, { desc = "Tests : afficher la sortie" })
+
+        vim.keymap.set("n", "<leader>tr", function()
+          neotest.run.stop()
+        end, { desc = "Tests : arrêter" })
+      end,
+    },
   },
-}
+  -- {
+  --     "yetone/avante.nvim",
+  --     opts = function(_, opts)
+  --       opts.provider = "semia"
+  --
+  --       opts.providers = opts.providers or {}
+  --       opts.providers.semia = {
+  --         __inherited_from = "openai",
+  --         endpoint = "https://semia.onera.net:8080/api/",
+  --         model = "semia-vision",
+  --         api_key_name = "SEMIA_API_KEY",
+  --       }
+  --
+  --       -- Récupération de la clé depuis la variable utilisateur Windows
+  --       local api_key = vim.trim(vim.fn.system({
+  --         "powershell.exe",
+  --         "-NoProfile",
+  --         "-Command",
+  --         "[Environment]::GetEnvironmentVariable('SEMIA_API_KEY', 'User')",
+  --       }))
+  --
+  --       if vim.v.shell_error == 0 and api_key ~= "" then
+  --         vim.env.SEMIA_API_KEY = api_key
+  --       end
+  --     end,
+  --
+  --     keys = {
+  --       {
+  --         "<leader>aa",
+  --         "<cmd>AvanteToggle<CR>",
+  --         mode = { "n", "v" },
+  --         desc = "Avante : ouvrir/fermer le chat",
+  --       },
+  --       {
+  --         "<leader>ao",
+  --         "<cmd>AvanteChat<CR>",
+  --         mode = { "n", "v" },
+  --         desc = "Avante : ouvrir le chat",
+  --       },
+  --       {
+  --         "<leader>ax",
+  --         "<cmd>AvanteStop<CR>",
+  --         mode = "n",
+  --         desc = "Avante : arrêter la génération",
+  --       },
+  --     },
+  --   },
+  -- {
+  --   "carlos-algms/agentic.nvim",
+  --   opts = {
+  --     provider = "cline-acp",
+  --     acp_providers = {
+  --       ["cline-acp"] = {
+  --         command = "cmd.exe",
+  --         args = {
+  --           "/d",
+  --           "/c",
+  --           "cline.cmd",
+  --           "--acp",
+  --         },
+  --         env = {
+  --           CLINE_PROVIDER = "openai-compatible",
+  --           CLINE_MODEL = "semia-vision",
+  --           CLINE_API_KEY = vim.trim(vim.fn.system({
+  --           "powershell.exe",
+  --           "-NoProfile",
+  --           "-Command",
+  --           "[Environment]::GetEnvironmentVariable('SEMIA_API_KEY', 'User')",
+  --         })),
+  --         },
+  --       },
+  --     },
+  --   },
+  --   keys = {
+  --     {
+  --       "<leader>aa",
+  --       function()
+  --         require("agentic").toggle()
+  --       end,
+  --       mode = { "n", "v" },
+  --       desc = "Agentic : ouvrir/fermer le chat",
+  --     },
+  --     {
+  --       "<leader>ao",
+  --       function()
+  --         require("agentic").open()
+  --       end,
+  --       mode = { "n", "v" },
+  --       desc = "Agentic : ouvrir le chat",
+  --     },
+  --     {
+  --       "<leader>ax",
+  --       function()
+  --         require("agentic").close()
+  --       end,
+  --       mode = "n",
+  --       desc = "Agentic : fermer le chat",
+  --     },
+  --   },
+  -- },
 }

@@ -20,24 +20,22 @@ function get_visual_selection()
   else
     lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3])
   end
-  return table.concat(lines, '\n')
+  return table.concat(lines, "\n")
 end
-
 
 vim.keymap.set("v", "<A-g>", ":RipSubstitute<CR>")
 vim.keymap.set("n", "<A-g>", ":RipSubstitute<CR>")
 
 vim.keymap.set("n", "<space>bb", ":lua require('arena').toggle()<CR>")
 
-
-vim.api.nvim_set_keymap('n', '<space>xX', '', {
- desc = "populate trouble for workspace diagnostique" ,
+vim.api.nvim_set_keymap("n", "<space>xX", "", {
+  desc = "populate trouble for workspace diagnostique",
   noremap = true,
   callback = function()
     for _, client in ipairs(vim.lsp.buf_get_clients()) do
       require("workspace-diagnostics").populate_workspace_diagnostics(client, 0)
     end
-  end
+  end,
 })
 -- compile avec maven avant dap java
 local dap = require("dap")
@@ -97,7 +95,7 @@ vim.keymap.set("n", "<C-v>", "P", {})
 vim.keymap.set("i", "<C-v>", "P", {})
 -- vim.keymap.set("n", "p", "P", {})
 -- remap_bracket_commands()
-vim.keymap.set("n",'<leader>"','gsaiw"',{remap = true})
+vim.keymap.set("n", '<leader>"', 'gsaiw"', { remap = true })
 -- Remapper les touches Ctrl+h, Ctrl+j, Ctrl+k, et Ctrl+l pour se déplacer en mode insert
 vim.keymap.set(
   "n",
@@ -124,7 +122,6 @@ vim.keymap.set(
   {}
 )
 
-
 vim.keymap.set("i", "<A-j>", "<Down>", { noremap = true, silent = true })
 vim.keymap.set("i", "<A-h>", "<Left>", { noremap = true, silent = true })
 vim.keymap.set("i", "<A-k>", "<Up>", { noremap = true, silent = true })
@@ -133,6 +130,74 @@ vim.keymap.set("i", "<A-l>", "<Right>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>l", "", { desc = "lspFred" })
 vim.keymap.set("n", "<leader>lj", "<cmd>lua vim.diagnostic.goto_next()<cr>", {})
 vim.keymap.set("n", "<leader>lk", "<cmd>lua vim.diagnostic.goto_prev()<cr>", {})
+
+
+vim.keymap.set("v", "<leader>dwa", function()
+  local start = vim.fn.getpos("'<")
+  local finish = vim.fn.getpos("'>")
+
+  local lines = vim.fn.getline(start[2], finish[2])
+  if #lines == 0 then
+    return
+  end
+
+  lines[1] = string.sub(lines[1], start[3])
+  lines[#lines] = string.sub(lines[#lines], 1, finish[3])
+
+  local expr = table.concat(lines, "\n")
+  expr = vim.trim(expr)
+
+  if expr ~= "" then
+    require("dap").repl.execute(
+      "watchpoint set expression -w read_write -- &(" .. expr .. ")"
+    )
+  end
+end, { desc = "Debug: Watchpoint sur sélection" })
+
+vim.keymap.set("v", "<leader>dww", function()
+  local start = vim.fn.getpos("'<")
+  local finish = vim.fn.getpos("'>")
+
+  local lines = vim.fn.getline(start[2], finish[2])
+  if #lines == 0 then
+    return
+  end
+
+  lines[1] = string.sub(lines[1], start[3])
+  lines[#lines] = string.sub(lines[#lines], 1, finish[3])
+
+  local expr = table.concat(lines, "\n")
+  expr = vim.trim(expr)
+
+  if expr ~= "" then
+    require("dap").repl.execute(
+      "watchpoint set expression -w write -- &(" .. expr .. ")"
+    )
+  end
+end, { desc = "Debug: Watchpoint sur sélection" })
+
+vim.keymap.set("v", "<leader>dwr", function()
+  local start = vim.fn.getpos("'<")
+  local finish = vim.fn.getpos("'>")
+
+  local lines = vim.fn.getline(start[2], finish[2])
+  if #lines == 0 then
+    return
+  end
+
+  lines[1] = string.sub(lines[1], start[3])
+  lines[#lines] = string.sub(lines[#lines], 1, finish[3])
+
+  local expr = table.concat(lines, "\n")
+  expr = vim.trim(expr)
+
+  if expr ~= "" then
+    require("dap").repl.execute(
+      "watchpoint set expression -w read -- &(" .. expr .. ")"
+    )
+  end
+end, { desc = "Debug: Watchpoint sur sélection" })
+
 vim.keymap.set(
   "n", -- Mode normal
   "<leader>dd", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
@@ -143,7 +208,7 @@ vim.keymap.set(
   "n", -- Mode normal
   "<leader>df", -- Raccourci clavier (par exemple, leader + d + r pour "repl")
   ":lua require('dapui').float_element('stacks', { enter = true })<CR>", -- Ouvre ou ferme la fenêtre REPL
-  { desc = "DAP float stacks"  } -- Options
+  { desc = "DAP float stacks" } -- Options
 )
 vim.keymap.set(
   "n", -- Mode normal
@@ -152,13 +217,13 @@ vim.keymap.set(
   { noremap = true, silent = true } -- Options
 )
 vim.keymap.set(
-  "n", 
+  "n",
   "<leader>dh",
   ":lua require('dapui').elements.watches.add(vim.fn.expand('<cword>'))<CR>", -- Ouvre ou ferme la fenêtre REPL
   { noremap = true, silent = true } -- Options
 )
 vim.keymap.set(
-  "v", 
+  "v",
   "<leader>dh",
   ":lua require('dapui').elements.watches.add(get_visual_selection())<CR>", -- Ouvre ou ferme la fenêtre REPL
   { noremap = true, silent = true } -- Options
@@ -179,14 +244,12 @@ vim.keymap.set(
 -- vim.keymap.set("t", "ç", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', { noremap = true, silent = true })
 --
 
-
 vim.keymap.set("n", "ç", "<CMD>lua Snacks.terminal.toggle()<CR>")
 
 vim.keymap.set("t", "ç", "<C-\\><C-n><CMD>lua Snacks.terminal.toggle()<CR>", {
   noremap = true,
   silent = true,
 })
-
 
 vim.keymap.set("n", "ç", function()
   Snacks.terminal()
@@ -311,8 +374,10 @@ overseer.register_template({
     return {
       cmd = { "cmake" },
       args = {
-        "--build", "build",
-        "--config", "Release",
+        "--build",
+        "build",
+        "--config",
+        "Release",
         "-j10",
       },
       components = {
@@ -330,9 +395,47 @@ overseer.register_template({
     return {
       cmd = { "cmake" },
       args = {
-        "--build", "build",
-        "--config", "Debug",
+        "--build",
+        "build",
+        "--config",
+        "Debug",
         "-j10",
+      },
+      components = {
+        "default",
+        "on_output_quickfix",
+        "on_complete_notify",
+      },
+    }
+  end,
+})
+
+overseer.register_template({
+  name = "CMakeBuildNinjaDebug",
+  builder = function()
+    return {
+      cmd = { "cmake" },
+      args = {
+        "/c",
+        "cmake --preset ninja-msvc-ifx-debug && cmake --build --preset ninja-msvc-ifx-debug",
+      },
+      components = {
+        "default",
+        "on_output_quickfix",
+        "on_complete_notify",
+      },
+    }
+  end,
+})
+
+overseer.register_template({
+  name = "CMakeBuildNinjaRelease",
+  builder = function()
+    return {
+      cmd = { "cmake" },
+      args = {
+        "/c",
+        "cmake --preset ninja-msvc-ifx-release && cmake --build --preset ninja-msvc-ifx-release",
       },
       components = {
         "default",
@@ -366,7 +469,7 @@ local function run_template(name)
 
       -- 2️⃣  Récupérer toutes les tâches terminées
       local finished = overseer.list_tasks({
-        status = { "SUCCESS", "FAILURE", "CANCELED" }   -- tous les états terminés
+        status = { "SUCCESS", "FAILURE", "CANCELED" }, -- tous les états terminés
       })
 
       if #finished > 0 then
@@ -374,13 +477,13 @@ local function run_template(name)
         table.sort(finished, function(a, b)
           -- `a.start_time` / `b.start_time` sont des timestamps (seconds depuis epoch)
           -- Si votre version d’Overseer expose `a.start` ou `a.created`, adaptez le champ.
-          return a.time_start> b.time_start
+          return a.time_start > b.time_start
         end)
 
         -- 4️⃣  Relancer la tâche la plus récente
-        local last = finished[1]          -- tâche la plus récente
+        local last = finished[1] -- tâche la plus récente
         overseer.run_action(last.id, "restart")
-        vim.cmd("OverseerOpen")           -- afficher la fenêtre d’Overseer
+        vim.cmd("OverseerOpen") -- afficher la fenêtre d’Overseer
       else
         -- Aucun historique → on lance le template demandé
         vim.cmd("OverseerRun " .. name)
@@ -398,11 +501,13 @@ end
 vim.keymap.set("n", "<F5>", run_template("CMakeConfigure"), opt)
 vim.keymap.set("n", "<F6>", run_template("CMakeBuildRelease"), opt)
 vim.keymap.set("n", "<F7>", run_template("CMakeBuildDebug"), opt)
+vim.keymap.set("n", "<F8>", run_template("CMakeBuildNinjaDebug"), opt)
+vim.keymap.set("n", "<F9>", run_template("CMakeBuildNinjaRelease"), opt)
 -- vim.keymap.set("n", "<F5>", ":OverseerShell cmake -S . -B build<cr>", opt)
 -- vim.keymap.set("n", "<F6>", ":OverseerShell cmake --build build --config Release -j10<cr>", opt)
 -- vim.keymap.set("n", "<F7>", ":OverseerShell cmake --build build --config Debug -j10<cr>", opt)
 -- vim.keymap.set("n", "<F7>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
-vim.keymap.set("n", "<F9>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
+-- vim.keymap.set("n", "<F9>", ':AsyncRun pwsh -Command "frintelcompile"<cr>', opt)
 vim.keymap.set("v", "*", [[y/\V<C-r>=escape(@",'/\')<CR><CR>]], {})
 -- vim.keymap.set("n", "<C-!>", ":%s/", opt)
 -- vim.keymap.set("v", "<C-!>", ":s/", opt)
@@ -648,12 +753,12 @@ function QuitAllLua()
 
   -- vim.cmd("SymbolsOutlineClose")
   --[[ vim.cmd("Lspsaga close_floaterm") ]]
-    --
+  --
 
-    local ok, gf = pcall(require("grug-far").get_instance, 0)
-    if ok and gf then
-      gf:close()
-    end
+  local ok, gf = pcall(require("grug-far").get_instance, 0)
+  if ok and gf then
+    gf:close()
+  end
   -- if vim.fn.exists(":FTerm") == 2 then
   --   require("FTerm").close()
   -- end
@@ -800,8 +905,11 @@ end, {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "gitcommit",
   callback = function()
-    vim.keymap.set("n", "<leader>ai",
+    vim.keymap.set(
+      "n",
+      "<leader>ai",
       ":0r !git diff --cached | cline -y<CR>",
-      { buffer = true, desc = "Message de commit par IA" })
+      { buffer = true, desc = "Message de commit par IA" }
+    )
   end,
 })
