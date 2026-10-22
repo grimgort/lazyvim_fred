@@ -498,11 +498,11 @@ local function run_template(name)
   end
 end
 
-vim.keymap.set("n", "<F5>", run_template("CMakeConfigure"), opt)
-vim.keymap.set("n", "<F6>", run_template("CMakeBuildRelease"), opt)
-vim.keymap.set("n", "<F7>", run_template("CMakeBuildDebug"), opt)
-vim.keymap.set("n", "<F8>", run_template("CMakeBuildNinjaDebug"), opt)
-vim.keymap.set("n", "<F9>", run_template("CMakeBuildNinjaRelease"), opt)
+-- vim.keymap.set("n", "<F5>", run_template("CMakeConfigure"), opt)
+vim.keymap.set("n", "<F6>", ":CMakeGenerate<CR>", opt)
+vim.keymap.set("n", "<F7>", ":CMakeBuild<CR>", opt)
+-- vim.keymap.set("n", "<F8>", run_template("CMakeBuildNinjaDebug"), opt)
+-- vim.keymap.set("n", "<F9>", run_template("CMakeBuildNinjaRelease"), opt)
 -- vim.keymap.set("n", "<F5>", ":OverseerShell cmake -S . -B build<cr>", opt)
 -- vim.keymap.set("n", "<F6>", ":OverseerShell cmake --build build --config Release -j10<cr>", opt)
 -- vim.keymap.set("n", "<F7>", ":OverseerShell cmake --build build --config Debug -j10<cr>", opt)

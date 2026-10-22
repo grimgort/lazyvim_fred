@@ -843,26 +843,25 @@ return {
     lazy = false,
     priority = 1000,
 
-    dependencies = {
-      "rktjmp/lush.nvim",
-    },
+        dependencies = {"nvim-treesitter/nvim-treesitter", "rktjmp/lush.nvim"},
 
     build = function()
       require("colorbox").update()
     end,
 
     config = function()
+            vim.o.termguicolors = true
       require("colorbox").setup({
-        filter = {
-          "primary",
-          function(color, spec)
-            return type(spec) == "table" and type(spec.github_stars) == "number" and spec.github_stars >= 100
-          end,
-        },
-
+        -- filter = {
+        --   "primary",
+        --   function(color, spec)
+        --     return type(spec) == "table" and type(spec.github_stars) == "number" and spec.github_stars >= 100
+        --   end,
+        -- },
+        --
         background = "light",
         policy = "shuffle",
-        timing = "startup",
+        -- timing = "startup",
       })
     end,
   },
@@ -1827,9 +1826,9 @@ return {
     ---@type avante.Config
     opts = {
       instructions_file = "avante.md",
-      disabled_tools = {
-        "git_commit",
-      },
+      -- disabled_tools = {
+      --   "git_commit",
+      -- },
       -- Utiliser Cline via ACP
       provider = "cline-acp",
 
