@@ -499,6 +499,7 @@ local function run_template(name)
 end
 
 -- vim.keymap.set("n", "<F5>", run_template("CMakeConfigure"), opt)
+vim.keymap.set("n", "<F5>", ":CMakeSelectBuildPreset<CR>", opt)
 vim.keymap.set("n", "<F6>", ":CMakeGenerate<CR>", opt)
 vim.keymap.set("n", "<F7>", ":CMakeBuild<CR>", opt)
 -- vim.keymap.set("n", "<F8>", run_template("CMakeBuildNinjaDebug"), opt)

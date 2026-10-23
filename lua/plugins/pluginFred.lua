@@ -928,27 +928,9 @@ return {
   {
     "SGauvin/ctest-telescope.nvim",
     ft = { "cpp", "c", "txt" },
-    opts = {
-      -- Path to the ctest executable
-      ctest_path = "ctest",
-      -- Folder where your compiled executables will be found
-      build_folder = "build",
-      dap_config = {
-        type = "codelldb",
-        request = "launch",
-        expressions = "native",
-        -- setupCommands = {
-        -- 	{
-        -- 		text = "-enable-pretty-printing",
-        -- 		description = "Enable pretty printing",
-        -- 		ignoreFailures = false,
-        -- 	},
-        -- },
-      },
-      extra_ctest_args = { "-C", "Debug" },
-    },
     config = function()
       require("ctest-telescope").setup({
+        build_folder = "build-ninja-debug",
         dap_config = {
           type = "codelldb",
           request = "launch",
@@ -1919,7 +1901,6 @@ return {
       },
     },
   },
-  {
     -- CMake : configure, build et CTest
     {
       "Civitasv/cmake-tools.nvim",
@@ -1975,7 +1956,6 @@ return {
         end, { desc = "Tests : arrêter" })
       end,
     },
-  },
   -- {
   --     "yetone/avante.nvim",
   --     opts = function(_, opts)
