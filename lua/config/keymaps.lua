@@ -903,14 +903,104 @@ end, {
 -- -- Pour C/C++
 -- dap.configurations.c = dap.configurations.cpp
 -- dap.configurations.rust = dap.configurations.cpp
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "gitcommit",
-  callback = function()
-    vim.keymap.set(
-      "n",
-      "<leader>ai",
-      ":0r !git diff --cached | cline -y<CR>",
-      { buffer = true, desc = "Message de commit par IA" }
-    )
-  end,
-})
+
+
+local prompt = [[Rédige un message de commit en français, au format Conventional Commits,
+pour le diff ci-dessous. N'exécute aucune commande, réponds uniquement avec le message.]]
+
+vim.api.nvim_create_user_command("CommitPerso", function()
+  local diff = vim.fn.system({ "git", "diff", "--staged" })
+  if vim.v.shell_error ~= 0 or vim.trim(diff) == "" then
+    vim.notify("Rien d'indexé (git add d'abord)", vim.log.levels.WARN)
+    return
+  end
+  require("avante.api").ask({
+    question = prompt .. "\n\n```diff\n" .. diff:sub(1, 20000) .. "\n```",
+  })
+end, {})
+
+vim.keymap.set("n", "<leader>ac", "<cmd>CommitPerso<CR>", { desc = "Avante : message de commit" })
+
+
+
+
+local ENDPOINT = "https://semia.onera.net:8080/api/chat/completions" -- à adapter
+local MODEL = "semia-vision"
+
+local PROMPT = [[Rédige un message de commit en anglais, au format Conventional Commits,
+pour le diff ci-dessous. Réponds uniquement avec le message (titre, ligne vide, corps court si utile),
+sans balises ni explications.]]
+
+local function get_commit_msg(callback)
+  local key = os.getenv("SEMIA_API_KEY")
+  if not key or key == "" then
+    return vim.notify("SEMIA_API_KEY introuvable dans l'environnement de Neovim", vim.log.levels.ERROR)
+  end
+
+  local diff = vim.fn.system({ "git", "diff", "--staged" })
+  if vim.v.shell_error ~= 0 or vim.trim(diff) == "" then
+    return vim.notify("Rien d'indexé (git add d'abord)", vim.log.levels.WARN)
+  end
+
+  local body = vim.json.encode({
+    model = MODEL,
+    temperature = 0.2,
+    messages = { { role = "user", content = PROMPT .. "\n\n" .. diff:sub(1, 20000) } },
+  })
+
+  vim.notify("Génération du message de commit...")
+  vim.system({
+    "curl.exe", "-s", ENDPOINT,
+    "-H", "Content-Type: application/json",
+    "-H", "Authorization: Bearer " .. key,
+    "-d", "@-",
+  }, { stdin = body, text = true }, function(res)
+    vim.schedule(function()
+      local ok, data = pcall(vim.json.decode, res.stdout or "")
+      local msg = ok and data.choices and data.choices[1] and data.choices[1].message.content
+      if not msg then
+    return vim.notify("Réponse inattendue : " .. (res.stdout or ""):sub(1, 200), vim.log.levels.ERROR)
+    end
+    msg = msg:gsub("^```%w*\n", ""):gsub("\n```%s*$", "")
+    callback(vim.trim(msg))
+end)
+end)
+end
+
+vim.api.nvim_create_user_command("CommitIA", function()
+get_commit_msg(function(msg)
+local tmp = vim.fn.tempname()
+vim.fn.writefile(vim.split(msg, "\n"), tmp)
+if vim.fn.exists(":Git") == 2 then
+    -- vim-fugitive : l'éditeur s'ouvre dans l'instance Neovim courante
+    vim.cmd("Git commit -e -F " .. vim.fn.fnameescape(tmp))
+else
+    -- sans fugitive : terminal avec un Neovim imbriqué comme éditeur
+    vim.cmd("tabnew")
+    vim.fn.termopen({ "git", "-c", "core.editor=nvim", "commit", "-e", "-F", tmp })
+    vim.cmd("startinsert")
+end
+end)
+end, {})
+
+vim.keymap.set("n", "<leader>aq", "<cmd>CommitIA<CR>", { desc = "IA : commit avec message pré-rempli" })
+
+-- mapping du pad numérique 
+for i = 0, 9 do
+  vim.keymap.set({ "n", "x", "o" }, "<k" .. i .. ">", tostring(i), {
+    remap = true,
+    desc = "Pavé numérique " .. i,
+  })
+end
+local ops = {
+  ["<kPlus>"] = "+",
+  ["<kMinus>"] = "-",
+  ["<kMultiply>"] = "*",
+  ["<kDivide>"] = "/",
+  ["<kPoint>"] = ".",
+  ["<kEnter>"] = "<CR>",
+}
+for lhs, rhs in pairs(ops) do
+  vim.keymap.set({ "i", "c" }, lhs, rhs)
+end
+-- end mapping du pad numérique 

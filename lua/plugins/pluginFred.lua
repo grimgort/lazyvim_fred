@@ -843,14 +843,14 @@ return {
     lazy = false,
     priority = 1000,
 
-        dependencies = {"nvim-treesitter/nvim-treesitter", "rktjmp/lush.nvim"},
+    dependencies = { "nvim-treesitter/nvim-treesitter", "rktjmp/lush.nvim" },
 
     build = function()
       require("colorbox").update()
     end,
 
     config = function()
-            vim.o.termguicolors = true
+      vim.o.termguicolors = true
       require("colorbox").setup({
         -- filter = {
         --   "primary",
@@ -1835,6 +1835,18 @@ return {
           },
         },
       },
+      shortcuts = {
+        {
+          name = "commit",
+          description = "Message de commit (index uniquement)",
+          details = "Rédige un message de commit pour les changements indexés, sans toucher à git",
+          prompt = [[Rédige un message de commit en français, au format Conventional Commits,
+pour les changements indexés (git diff --staged).
+Interdit : git add, git stash, git reset, git commit, ou toute commande qui modifie le dépôt.
+Seule commande autorisée : git diff --staged (lecture seule).
+Réponds uniquement avec le message, sans l'appliquer.]],
+        },
+      },
     },
 
     keys = {
@@ -1901,61 +1913,74 @@ return {
       },
     },
   },
-    -- CMake : configure, build et CTest
-    {
-      "Civitasv/cmake-tools.nvim",
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-      },
-      opts = {
-        cmake_use_preset = true,
-        cmake_regenerate_on_save = false,
-        ctest_command = "ctest",
-        ctest_show_labels = true,
-      },
+  -- CMake : configure, build et CTest
+  {
+    "Civitasv/cmake-tools.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
     },
-
-    -- Neotest + adaptateur CTest
-    {
-      "nvim-neotest/neotest",
-      dependencies = {
-        "nvim-neotest/nvim-nio",
-        "nvim-lua/plenary.nvim",
-        "orjangj/neotest-ctest",
-      },
-      config = function()
-        local neotest = require("neotest")
-
-        neotest.setup({
-          adapters = {
-            require("neotest-ctest").setup({
-              cmd = { "ctest" },
-            }),
+    opts = {
+      cmake_use_preset = true,
+      cmake_regenerate_on_save = false,
+      ctest_command = "ctest",
+      ctest_show_labels = true,
+      cmake_executor = {
+        name = "overseer",
+        default_opts = {
+          overseer = {
+            new_task_opts = {
+              strategy = nil,
+            },
+            on_new_task = function(task)
+              require("overseer").open({ enter = false, direction = "bottom" })
+            end,
           },
-        })
-
-        -- Navigation et exécution des tests
-        vim.keymap.set("n", "<leader>ts", function()
-          neotest.summary.open()
-        end, { desc = "Tests : ouvrir le résumé" })
-
-        vim.keymap.set("n", "<leader>tt", function()
-          neotest.run.run()
-        end, { desc = "Tests : lancer le test courant" })
-
-        vim.keymap.set("n", "<leader>tT", function()
-          neotest.run.run(vim.fn.getcwd())
-        end, { desc = "Tests : lancer le projet" })
-
-        vim.keymap.set("n", "<leader>to", function()
-          neotest.output.open({ enter = true })
-        end, { desc = "Tests : afficher la sortie" })
-
-        vim.keymap.set("n", "<leader>tr", function()
-          neotest.run.stop()
-        end, { desc = "Tests : arrêter" })
-      end,
+        },
+      },
     },
+  },
+
+  -- Neotest + adaptateur CTest
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "orjangj/neotest-ctest",
+    },
+    config = function()
+      local neotest = require("neotest")
+
+      neotest.setup({
+        adapters = {
+          require("neotest-ctest").setup({
+            cmd = { "ctest" },
+          }),
+        },
+      })
+
+      -- Navigation et exécution des tests
+      vim.keymap.set("n", "<leader>ts", function()
+        neotest.summary.open()
+      end, { desc = "Tests : ouvrir le résumé" })
+
+      vim.keymap.set("n", "<leader>tt", function()
+        neotest.run.run()
+      end, { desc = "Tests : lancer le test courant" })
+
+      vim.keymap.set("n", "<leader>tT", function()
+        neotest.run.run(vim.fn.getcwd())
+      end, { desc = "Tests : lancer le projet" })
+
+      vim.keymap.set("n", "<leader>to", function()
+        neotest.output.open({ enter = true })
+      end, { desc = "Tests : afficher la sortie" })
+
+      vim.keymap.set("n", "<leader>tr", function()
+        neotest.run.stop()
+      end, { desc = "Tests : arrêter" })
+    end,
+  },
   -- {
   --     "yetone/avante.nvim",
   --     opts = function(_, opts)
@@ -2055,5 +2080,54 @@ return {
   --       desc = "Agentic : fermer le chat",
   --     },
   --   },
+  -- },
+  {
+    "b0o/incline.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
+  {
+    "amitds1997/remote-nvim.nvim",
+    version = "*",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    opts = {
+      -- Ouvre Neovide comme client local au lieu d'une session Neovim dans le terminal
+      client_callback = function(port, _)
+        vim.fn.jobstart({ "neovide", "--server", "localhost:" .. port }, { detach = true })
+      end,
+      ssh_config = {
+        ssh_binary = "C:/Windows/System32/OpenSSH/ssh.exe",
+        scp_binary = "C:/Windows/System32/OpenSSH/scp.exe",
+      },
+    },
+  },
+  -- {
+  --   "mfussenegger/nvim-jdtls",
+  --   opts = function(_, opts)
+  --     local jdk21 = "C:/Users/ftarroux/scoop/apps/openjdk27/current"
+  --     -- jdtls utilisera ce JDK, sans toucher à votre JAVA_HOME système
+  --     vim.env.JAVA_HOME = jdk21
+  --     vim.env.PATH = jdk21 .. "/bin;" .. vim.env.PATH
+  --
+  --     -- Ceinture et bretelles : on le passe aussi explicitement au wrapper
+  --     table.insert(opts.cmd, "--java-executable=" .. jdk21 .. "/java.exe")
+  --
+  --     -- Optionnel : JDK cibles de vos projets (si différents de 21)
+  --     opts.settings = vim.tbl_deep_extend("force", opts.settings or {}, {
+  --       java = {
+  --         configuration = {
+  --           runtimes = {
+  --             { name = "JavaSE-21", path = jdk21, default = true },
+  --             -- { name = "JavaSE-17", path = "C:/Program Files/Eclipse Adoptium/jdk-17.0.x-hotspot" },
+  --           },
+  --         },
+  --       },
+  --     })
+  --     return opts
+  --   end,
   -- },
 }
