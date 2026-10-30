@@ -1,6 +1,6 @@
 return {
-  -- {
-  --   "folke/noice.nvim",
+    -- {
+    --   "folke/noice.nvim",
   --   enabled = false,
   -- },
   {
@@ -1799,10 +1799,11 @@ return {
   },
   {
     "yetone/avante.nvim",
+
+        version = "v0.4.5",
     build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
       or "make",
     event = "VeryLazy",
-    version = false,
 
     ---@module 'avante'
     ---@type avante.Config
@@ -1825,7 +1826,7 @@ return {
           },
           env = {
             CLINE_PROVIDER = "openai-compatible",
-            CLINE_MODEL = "semia-vision",
+            CLINE_MODEL = "semia-large",
             CLINE_API_KEY = vim.trim(vim.fn.system({
               "powershell.exe",
               "-NoProfile",
@@ -2105,29 +2106,179 @@ Réponds uniquement avec le message, sans l'appliquer.]],
       },
     },
   },
-  -- {
-  --   "mfussenegger/nvim-jdtls",
-  --   opts = function(_, opts)
-  --     local jdk21 = "C:/Users/ftarroux/scoop/apps/openjdk27/current"
-  --     -- jdtls utilisera ce JDK, sans toucher à votre JAVA_HOME système
-  --     vim.env.JAVA_HOME = jdk21
-  --     vim.env.PATH = jdk21 .. "/bin;" .. vim.env.PATH
-  --
-  --     -- Ceinture et bretelles : on le passe aussi explicitement au wrapper
-  --     table.insert(opts.cmd, "--java-executable=" .. jdk21 .. "/java.exe")
-  --
-  --     -- Optionnel : JDK cibles de vos projets (si différents de 21)
-  --     opts.settings = vim.tbl_deep_extend("force", opts.settings or {}, {
-  --       java = {
-  --         configuration = {
-  --           runtimes = {
-  --             { name = "JavaSE-21", path = jdk21, default = true },
-  --             -- { name = "JavaSE-17", path = "C:/Program Files/Eclipse Adoptium/jdk-17.0.x-hotspot" },
-  --           },
-  --         },
-  --       },
-  --     })
-  --     return opts
-  --   end,
-  -- },
+    -- {
+    --   "mfussenegger/nvim-jdtls",
+    --     enabled = true,
+    --   opts = function(_, opts)
+    --     -- ⚠ SERVEUR jdtls : depuis jdtls 1.63.0 (Mason, snapshot du
+    --     -- 19/10/2026), les bundles Eclipse exigent Java >= 25 au
+    --     -- démarrage (sinon « BundleException … osgi.ee … JavaSE 25 » :
+    --     -- le serveur ne démarre pas ; les JDK 21/22 ne suffisent plus).
+    --     -- → JAVA_HOME = JDK 27 scoop pour tout ce que lance Neovim.
+    --     -- La JVM du serveur est AUSSI épinglée par --java-executable
+    --     -- dans java-offline.lua (aucune casse si JAVA_HOME rechange).
+    --     -- Le PROJET reste compilé/exécuté sur le JDK 21 : runtimes +
+    --     -- daemon Gradle → voir java-offline.lua.
+    --     local jdk27 = "C:/Users/ftarroux/scoop/apps/openjdk27/current"
+    --
+    --     vim.env.JAVA_HOME = jdk27
+    --     vim.env.PATH = jdk27 .. "/bin;" .. vim.env.PATH
+    --
+    --     -- opts.settings = vim.tbl_deep_extend("force", opts.settings or {}, {
+    --     --   java = {
+    --     --     configuration = {
+    --     --       runtimes = {
+    --     --         { name = "JavaSE-22", path = jdk22, default = true },
+    --     --       },
+    --     --     },
+    --         -- ✅ Désactiver la résolution automatique du wrapper Gradle
+    --         -- project = {
+    --         --   -- Empêche jdtls de télécharger des distributions Gradle
+    --         --   -- referencedLibraries = {},
+    --         -- },
+    --       -- },
+    --       -- ✅ Désactiver le téléchargement des checksums du wrapper
+    --       -- gradle = {
+    --       --   -- Force jdtls à utiliser une distribution locale si disponible
+    --       --           enabled = true,
+    --       -- -- 1) Ignorer le wrapper du projet : sinon Buildship télécharge la
+    --       -- --    distribution pointée par gradle/wrapper/gradle-wrapper.properties.
+    --       -- --    (Ordre de priorité jdtls : wrapper > version > home.)
+    --       -- wrapper = { enabled = false },
+    --       -- -- 2) Gradle SYSTÈME (scoop) : installation locale → jdtls ne
+    --       -- --    télécharge AUCUNE distribution Gradle.
+    --       -- home = 'C:/Users/ftarroux/scoop/apps/gradle/current',
+    --       -- -- 3) JVM qui lance le daemon Gradle (évite la détection auto).
+    --       -- java = { home = 'C:/Users/ftarroux/scoop/apps/openjdk21/current' },
+    --       -- -- ⚠ NE PAS définir `version` : jdtls téléchargerait cette version
+    --       -- --    depuis services.gradle.org.
+    --       --                   offline = { enabled = true },
+    --       -- },
+    --     -- }
+    --     -- )
+    --     return opts
+    --   end,
+    -- },
+-- {
+--   "mfussenegger/nvim-jdtls",
+--         enabled=false,
+--   opts = function(_, opts)
+--     local jdk22 = "C:/Users/ftarroux/scoop/apps/openjdk22/22.0.2-9"
+--
+--     vim.env.JAVA_HOME = jdk22
+--     vim.env.PATH = jdk22 .. "/bin;" .. vim.env.PATH
+--
+--     opts.settings = vim.tbl_deep_extend("force", opts.settings or {}, {
+--       java = {
+--         configuration = {
+--           runtimes = {
+--             { name = "JavaSE-22", path = jdk22, default = true },
+--           },
+--         },
+--       },
+--     })
+--     return opts
+--   end,
+-- },
+-- {
+-- 'nvim-java/nvim-java',
+-- config = function()
+--   -- JDK (jdtls demande Java 21 minimum)
+--   local java_home = [[C:\Users\ftarroux\scoop\apps\openjdk21\current]]
+--   vim.env.JAVA_HOME = java_home
+--   vim.env.PATH = java_home .. [[\bin;]] .. vim.env.PATH
+--
+--   -- Proxy : lu par la JVM de jdtls (et donc par le téléchargement des checksums)
+--   -- local proxy_host = 'proxy.onera'   -- à adapter
+--   -- local proxy_port = '80'               -- à adapter
+--   -- vim.env.JAVA_TOOL_OPTIONS = table.concat({
+--   --   '-Dhttp.proxyHost=' .. proxy_host,
+--   --   '-Dhttp.proxyPort=' .. proxy_port,
+--   --   '-Dhttps.proxyHost=' .. proxy_host,
+--   --   '-Dhttps.proxyPort=' .. proxy_port,
+--   --   '-Dhttp.nonProxyHosts=localhost|127.0.0.1',
+--   --   -- décommente si le proxy fait de l'inspection TLS (erreur PKIX) :
+--   --   -- '-Djavax.net.ssl.trustStoreType=Windows-ROOT',
+--   -- }, ' ')
+--
+--   -- Proxy pour Mason / curl (téléchargement de jdtls, lombok, etc.)
+--   -- vim.env.HTTP_PROXY  = 'http://' .. proxy_host .. ':' .. proxy_port
+--   -- vim.env.HTTPS_PROXY = 'http://' .. proxy_host .. ':' .. proxy_port
+--   -- vim.env.NO_PROXY    = 'localhost,127.0.0.1'
+--
+--   -- Tous les composants pointent vers des installations DÉJÀ PRÉSENTES sur la
+--   -- machine → nvim-java ne télécharge RIEN au démarrage.
+--   require('java').setup({
+--     -- jdk = {
+--     --   auto_install = false,
+--     --   path = [[C:\Users\ftarroux\scoop\apps\openjdk21\current]],
+--     -- },
+--     -- -- jdtls 1.63.0 (installé par Mason) : plus récent que le 1.54.0 du store
+--     -- -- nvim-java, il connaît nativement le checksum du wrapper Gradle 9.8.0.
+--     -- jdtls = {
+--     --   auto_install = false,
+--     --   path = [[C:\Users\ftarroux\AppData\Local\nvim-data\mason\packages\jdtls]],
+--     -- },
+--     -- lombok = {
+--     --   auto_install = false,
+--     --   path = [[C:\Users\ftarroux\AppData\Local\nvim-data\nvim-java\packages\lombok\1.18.42\lombok-1.18.42.jar]],
+--     -- },
+--     -- java_test = {
+--     --   auto_install = false,
+--     --   path = [[C:\Users\ftarroux\AppData\Local\nvim-data\nvim-java\packages\java-test\0.43.2\extension]],
+--     -- },
+--     -- java_debug_adapter = {
+--     --   auto_install = false,
+--     --   path = [[C:\Users\ftarroux\AppData\Local\nvim-data\nvim-java\packages\java-debug\0.58.3\extension]],
+--     -- },
+--     -- -- Pas de projet Spring ici → désactivé (aucun téléchargement).
+--     -- spring_boot_tools = { enable = false },
+--   })
+--
+--   -- Réglages jdtls, posés APRÈS setup() (le DERNIER appel à vim.lsp.config
+--   -- gagne) et AVANT enable().
+--   local jdtls_settings = {
+--     java = {
+--       configuration = {
+--         runtimes = {
+--           { name = 'JavaSE-21', path = java_home:gsub('\\', '/'), default = true },
+--         },
+--       },
+--       import = {
+--         gradle = {
+--           enabled = true,
+--           -- 1) Ignorer le wrapper du projet : sinon Buildship télécharge la
+--           --    distribution pointée par gradle/wrapper/gradle-wrapper.properties.
+--           --    (Ordre de priorité jdtls : wrapper > version > home.)
+--           wrapper = { enabled = false },
+--           -- 2) Gradle SYSTÈME (scoop) : installation locale → jdtls ne
+--           --    télécharge AUCUNE distribution Gradle.
+--           home = 'C:/Users/ftarroux/scoop/apps/gradle/current',
+--           -- 3) JVM qui lance le daemon Gradle (évite la détection auto).
+--           java = { home = 'C:/Users/ftarroux/scoop/apps/openjdk21/current' },
+--           -- ⚠ NE PAS définir `version` : jdtls téléchargerait cette version
+--           --    depuis services.gradle.org.
+--                             offline = { enabled = true },
+--         },
+--       },
+--       -- 4) Mode 100 % hors-ligne (--offline) : les dépendances (Guava, JUnit)
+--       --    sont en cache depuis le `gradle build` réussi du 30/10/2026 (via
+--       --    proxy) → l'import Gradle de jdtls ne télécharge RIEN du tout.
+--       --    Si vous ajoutez une dépendance : commenter cette ligne, relancer
+--       --    `gradle build` (via proxy), puis la décommenter.
+--       offline = { enabled = true },
+--     },
+--   }
+--
+--   vim.lsp.config('jdtls', {
+--     -- Canal standard nvim (workspace/didChangeConfiguration à l'attachement)
+--     settings = jdtls_settings,
+--     -- Canal natif jdtls : initializationOptions.settings est appliqué AVANT
+--     -- le premier import du projet → aucune course avec l'import Gradle.
+--     init_options = { settings = jdtls_settings },
+--   })
+--
+--   vim.lsp.enable('jdtls')
+-- end,
+--  },
 }

@@ -38,12 +38,16 @@ vim.api.nvim_set_keymap("n", "<space>xX", "", {
   end,
 })
 -- compile avec maven avant dap java
-local dap = require("dap")
-dap.listeners.before.launch["java-maven-compile"] = function(session, body)
-  if session.config.type == "java" then
-    vim.fn.system("mvn compile -f matisse_IU/pom.xml")
-  end
-end
+-- ⚠ Désactivé le 30/10/2026 : matisse_IU est un projet GRADLE (aucun
+-- pom.xml) → `mvn compile` échouait à CHAQUE lancement F5 java et
+-- retardait/aveuglait le debug. La compilation est déjà assurée par
+-- jdtls/Gradle avant le démarrage du debug (Buildship + resolveClasspath).
+-- local dap = require("dap")
+-- dap.listeners.before.launch["java-maven-compile"] = function(session, body)
+--   if session.config.type == "java" then
+--     vim.fn.system("mvn compile -f matisse_IU/pom.xml")
+--   end
+-- end
 -- Use this to toggle gitui in a floating terminal
 -- vim.keymap.set('n', '<A-g>', function()
 --     gitui:toggle()
