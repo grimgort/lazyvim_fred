@@ -918,17 +918,25 @@ vim.api.nvim_create_user_command("CommitPerso", function()
     vim.notify("Rien d'indexé (git add d'abord)", vim.log.levels.WARN)
     return
   end
-  require("avante.api").ask({
-    question = prompt .. "\n\n```diff\n" .. diff:sub(1, 20000) .. "\n```",
-  })
+  -- avante peut être désactivé (remplacé par agentic.nvim) : dans ce cas on
+  -- bascule sur CommitIA (curl SEMIA direct) au lieu de planter.
+  local ok, avante_api = pcall(require, "avante.api")
+  if ok then
+    avante_api.ask({
+      question = prompt .. "\n\n```diff\n" .. diff:sub(1, 20000) .. "\n```",
+    })
+  else
+    vim.notify("avante désactivé — repli sur CommitIA (curl SEMIA)", vim.log.levels.INFO)
+    vim.cmd("CommitIA")
+  end
 end, {})
 
-vim.keymap.set("n", "<leader>ac", "<cmd>CommitPerso<CR>", { desc = "Avante : message de commit" })
+vim.keymap.set("n", "<leader>ac", "<cmd>CommitPerso<CR>", { desc = "IA : message de commit (avante ou repli curl)" })
 
 
 
 
-local ENDPOINT = "https://semia.onera.net:8080/api/chat/completions" -- à adapter
+local ENDPOINT = "https://semia.onera.net/llm/v1/chat/completions" -- à adapter
 local MODEL = "semia-vision"
 
 local PROMPT = [[Rédige un message de commit en anglais, au format Conventional Commits,

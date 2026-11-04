@@ -1798,7 +1798,10 @@ return {
     opts = {},
   },
   {
+    -- Remplacé par carlos-algms/agentic.nvim (bloc « Agentic.nvim » plus bas).
+    -- Rollback : remettre enabled = true ici et désactiver le bloc agentic.
     "yetone/avante.nvim",
+    enabled = false,
 
         version = "v0.4.5",
     build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
@@ -1823,6 +1826,7 @@ return {
             "/c",
             "cline.cmd",
             "--acp",
+            "--plan"
           },
           env = {
             CLINE_PROVIDER = "openai-compatible",
@@ -2029,59 +2033,198 @@ Réponds uniquement avec le message, sans l'appliquer.]],
   --       },
   --     },
   --   },
-  -- {
-  --   "carlos-algms/agentic.nvim",
-  --   opts = {
-  --     provider = "cline-acp",
-  --     acp_providers = {
-  --       ["cline-acp"] = {
-  --         command = "cmd.exe",
-  --         args = {
-  --           "/d",
-  --           "/c",
-  --           "cline.cmd",
-  --           "--acp",
-  --         },
-  --         env = {
-  --           CLINE_PROVIDER = "openai-compatible",
-  --           CLINE_MODEL = "semia-vision",
-  --           CLINE_API_KEY = vim.trim(vim.fn.system({
-  --           "powershell.exe",
-  --           "-NoProfile",
-  --           "-Command",
-  --           "[Environment]::GetEnvironmentVariable('SEMIA_API_KEY', 'User')",
-  --         })),
-  --         },
-  --       },
-  --     },
-  --   },
-  --   keys = {
-  --     {
-  --       "<leader>aa",
-  --       function()
-  --         require("agentic").toggle()
-  --       end,
-  --       mode = { "n", "v" },
-  --       desc = "Agentic : ouvrir/fermer le chat",
-  --     },
-  --     {
-  --       "<leader>ao",
-  --       function()
-  --         require("agentic").open()
-  --       end,
-  --       mode = { "n", "v" },
-  --       desc = "Agentic : ouvrir le chat",
-  --     },
-  --     {
-  --       "<leader>ax",
-  --       function()
-  --         require("agentic").close()
-  --       end,
-  --       mode = "n",
-  --       desc = "Agentic : fermer le chat",
-  --     },
-  --   },
-  -- },
+  -- ──────────────────────────────────────────────────────────────────────
+  -- Agentic.nvim : chat ACP en remplacement d'avante.nvim
+  -- https://github.com/carlos-algms/agentic.nvim
+  --
+  -- Même « cerveau » que la config avante : Cline en mode ACP, backend
+  -- openai-compatible SEMIA (modèle semia-large, session en mode plan).
+  --
+  -- Prérequis : Neovim ≥ 0.11 et le CLI cline (npm i -g cline) dans le PATH.
+  -- Diagnostic : :checkhealth agentic
+  --
+  -- Équivalences avante → agentic :
+  --   • <leader>al « Act/Plan »     → <S-Tab> ou <localLeader>a dans le chat
+  --   • « AvanteStop »              → require("agentic").stop_generation()
+  --   • raccourci avante « commit » → pas d'équivalent direct : <leader>ac
+  --     (CommitPerso) bascule sur CommitIA (curl SEMIA), ou demander au chat.
+  --
+  -- Dans le chat : <S-Tab>/<localLeader>a mode · <localLeader>m modèle ·
+  -- <localLeader>s provider · <localLeader>p coller une image · « / »
+  -- slash-commands · « @ » référencer un fichier.
+  -- ──────────────────────────────────────────────────────────────────────
+  {
+    "carlos-algms/agentic.nvim",
+
+    -- opts en fonction : la clé SEMIA (appel PowerShell) n'est lue qu'au
+    -- premier chargement du plugin, pas à chaque démarrage de Neovim.
+    --- @return agentic.PartialUserConfig
+    opts = function()
+      local api_key = vim.trim(vim.fn.system({
+        "powershell.exe",
+        "-NoProfile",
+        "-Command",
+        "[Environment]::GetEnvironmentVariable('SEMIA_API_KEY', 'User')",
+      }))
+
+      return {
+        provider = "cline-acp",
+
+        acp_providers = {
+          -- Surcharge du provider intégré « cline-acp » (défaut : `cline --acp`) :
+          -- seuls les champs listés remplacent ceux par défaut. Sous Windows,
+          -- `cline` est un .cmd (npm/scoop) : il faut passer par cmd.exe.
+          ["cline-acp"] = {
+            command = "cmd.exe",
+            args = {
+              "/d",
+              "/c",
+              "cline.cmd",
+              "--acp",
+              "--plan",
+            },
+            env = {
+              CLINE_PROVIDER = "openai-compatible",
+              CLINE_MODEL = "semia-large",
+              CLINE_API_KEY = (vim.v.shell_error == 0 and api_key ~= "") and api_key or nil,
+            },
+          },
+        },
+
+        windows = {
+          position = "right", -- "right" | "left" | "bottom"
+          width = "40%",
+        },
+
+        -- <localLeader>a : changer de mode agent (Act/Plan/Auto-accept…),
+        -- en plus du <S-Tab> par défaut. Attention : la liste est remplacée
+        -- (merge « force »), on garde donc <S-Tab> explicitement.
+        keymaps = {
+          widget = {
+            change_mode = {
+              { "<S-Tab>", mode = { "i", "n", "v" } },
+              { "<localLeader>a", mode = { "n", "v" } },
+            },
+          },
+        },
+      }
+    end,
+
+    keys = {
+      {
+        "<leader>aa",
+        function()
+          require("agentic").toggle()
+        end,
+        mode = { "n", "v" },
+        desc = "Agentic : ouvrir/fermer le chat",
+      },
+      {
+        "<leader>ao",
+        function()
+          require("agentic").open()
+        end,
+        mode = { "n", "v" },
+        desc = "Agentic : ouvrir le chat",
+      },
+      {
+        "<leader>ax",
+        function()
+          require("agentic").stop_generation()
+        end,
+        mode = "n",
+        desc = "Agentic : arrêter la génération",
+      },
+      {
+        "<leader>al",
+        function()
+          require("agentic").rotate_layout()
+        end,
+        mode = "n",
+        desc = "Agentic : pivoter la disposition",
+      },
+      {
+        "<leader>af",
+        function()
+          require("agentic").add_selection_or_file_to_context()
+        end,
+        mode = { "n", "v" },
+        desc = "Agentic : fichier/sélection → contexte",
+      },
+      {
+        "<leader>ad",
+        function()
+          require("agentic").add_current_line_diagnostics()
+        end,
+        mode = "n",
+        desc = "Agentic : diagnostic (ligne) → contexte",
+      },
+      {
+        "<leader>aD",
+        function()
+          require("agentic").add_buffer_diagnostics()
+        end,
+        mode = "n",
+        desc = "Agentic : diagnostics (buffer) → contexte",
+      },
+      {
+        "<leader>an",
+        function()
+          require("agentic").new_session()
+        end,
+        mode = "n",
+        desc = "Agentic : nouvelle session",
+      },
+      {
+        "<leader>aS",
+        function()
+          require("agentic").restore_session()
+        end,
+        mode = "n",
+        desc = "Agentic : restaurer une session",
+      },
+      {
+        "<leader>ap",
+        function()
+          require("agentic").switch_provider()
+        end,
+        mode = "n",
+        desc = "Agentic : changer de provider ACP",
+      },
+    },
+  },
+
+  -- Rendu markdown du chat agentic (filetype du buffer de chat : « AgenticChat »)
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown", "Avante", "AgenticChat" },
+    opts = {
+      file_types = { "markdown", "Avante", "AgenticChat" },
+    },
+  },
+
+  -- blink.cmp ne doit pas s'attacher au prompt agentic (autocomplétion intégrée
+  -- pour les slash-commands « / » et le sélecteur de fichiers « @ »)
+  {
+    "saghen/blink.cmp",
+    optional = true,
+    opts = {
+      enabled = function()
+        return not vim.tbl_contains({ "AgenticInput" }, vim.bo.filetype)
+      end,
+    },
+  },
+
+  -- Groupe which-key pour le préfixe <leader>a
+  {
+    "folke/which-key.nvim",
+    optional = true,
+    opts = {
+      spec = {
+        { "<leader>a", group = "Agentic (IA)" },
+      },
+    },
+  },
   {
     "b0o/incline.nvim",
     event = "VeryLazy",
