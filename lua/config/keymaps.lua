@@ -980,19 +980,71 @@ end)
 end
 
 vim.api.nvim_create_user_command("CommitIA", function()
-get_commit_msg(function(msg)
-local tmp = vim.fn.tempname()
-vim.fn.writefile(vim.split(msg, "\n"), tmp)
-if vim.fn.exists(":Git") == 2 then
-    -- vim-fugitive : l'éditeur s'ouvre dans l'instance Neovim courante
-    vim.cmd("Git commit -e -F " .. vim.fn.fnameescape(tmp))
-else
-    -- sans fugitive : terminal avec un Neovim imbriqué comme éditeur
-    vim.cmd("tabnew")
-    vim.fn.termopen({ "git", "-c", "core.editor=nvim", "commit", "-e", "-F", tmp })
-    vim.cmd("startinsert")
-end
-end)
+  get_commit_msg(function(msg)
+    local tmp = vim.fn.tempname()
+    vim.fn.writefile(vim.split(msg, "\n"), tmp)
+    if vim.fn.exists(":Git") == 2 then
+      -- vim-fugitive : l'éditeur s'ouvre dans l'instance Neovim courante
+      vim.cmd("Git commit -e -F " .. vim.fn.fnameescape(tmp))
+    else
+      -- sans fugitive : terminal avec un Neovim imbriqué comme éditeur.
+      -- On mémorise l'onglet d'origine : après le :wq du nvim imbriqué, on
+      -- y revient automatiquement et on referme l'onglet du terminal (sinon
+      -- on reste bloqué sur le buffer terminal mort).
+      -- NB : les valeurs passées au callback sont stockées dans une table
+      -- `ctx` — les upvalues « nus » ne survivent pas au callback termopen.
+      local ctx = {}
+      ctx.orig_tab = vim.api.nvim_get_current_tabpage()
+      vim.cmd("tabnew")
+      ctx.term_tab = vim.api.nvim_get_current_tabpage()
+      ctx.term_buf = vim.fn.termopen({
+        "git",
+        "-c",
+        "core.editor=nvim",
+        "commit",
+        "-e",
+        "-F",
+        tmp,
+      }, {
+        on_exit = function(_, code, _)
+          vim.schedule(function()
+            if code == 0 then
+              vim.notify("Commit créé", vim.log.levels.INFO)
+            else
+              vim.notify(
+                "Commit non créé (code " .. code .. ") — sortie git conservée dans l'onglet terminal",
+                vim.log.levels.WARN
+              )
+            end
+
+            -- Retour à l'onglet d'origine (fenêtres/buffers intacts) si on
+            -- se trouve encore sur l'onglet du terminal.
+            if
+              vim.api.nvim_tabpage_is_valid(ctx.orig_tab)
+              and vim.api.nvim_get_current_tabpage() == ctx.term_tab
+            then
+              pcall(vim.api.nvim_set_current_tabpage, ctx.orig_tab)
+            end
+
+            -- Après un commit réussi : fermeture de l'onglet terminal et
+            -- suppression de son buffer (liste de buffers identique à avant).
+            -- En cas d'échec, l'onglet est conservé pour lire la sortie git.
+            if code == 0 and vim.api.nvim_tabpage_is_valid(ctx.term_tab) then
+              pcall(vim.cmd, vim.api.nvim_tabpage_get_number(ctx.term_tab) .. "tabclose!")
+              if
+                type(ctx.term_buf) == "number"
+                and ctx.term_buf > 0
+                and vim.api.nvim_buf_is_valid(ctx.term_buf)
+              then
+                pcall(vim.cmd, "silent! bwipeout! " .. ctx.term_buf)
+              end
+            end
+          end)
+        end,
+      })
+      vim.cmd("startinsert")
+    end
+  end)
 end, {})
 
 vim.keymap.set("n", "<leader>aq", "<cmd>CommitIA<CR>", { desc = "IA : commit avec message pré-rempli" })

@@ -2038,7 +2038,8 @@ Réponds uniquement avec le message, sans l'appliquer.]],
   -- https://github.com/carlos-algms/agentic.nvim
   --
   -- Même « cerveau » que la config avante : Cline en mode ACP, backend
-  -- openai-compatible SEMIA (modèle semia-large, session en mode plan).
+  -- openai-compatible SEMIA (modèle semia-large, session en mode act avec
+  -- auto-approbation par défaut des tool calls, voir « --auto-approve »).
   --
   -- Prérequis : Neovim ≥ 0.11 et le CLI cline (npm i -g cline) dans le PATH.
   -- Diagnostic : :checkhealth agentic
@@ -2074,6 +2075,14 @@ Réponds uniquement avec le message, sans l'appliquer.]],
           -- Surcharge du provider intégré « cline-acp » (défaut : `cline --acp`) :
           -- seuls les champs listés remplacent ceux par défaut. Sous Windows,
           -- `cline` est un .cmd (npm/scoop) : il faut passer par cmd.exe.
+          --
+          -- « --auto-approve » : Cline auto-approuve par défaut tous les tool
+          -- calls (commandes, éditions…) sans demander de permission, et
+          -- démarre en mode « act » (au lieu de « plan »). Bascule possible à
+          -- la volée dans le chat : <localLeader>o → « Auto-approve tools »,
+          -- ou changement de mode avec <S-Tab>/<localLeader>a.
+          -- ATTENTION : l'agent peut alors exécuter n'importe quelle commande
+          -- sans confirmation — à réserver à un environnement de confiance.
           ["cline-acp"] = {
             command = "cmd.exe",
             args = {
@@ -2081,7 +2090,7 @@ Réponds uniquement avec le message, sans l'appliquer.]],
               "/c",
               "cline.cmd",
               "--acp",
-              "--plan",
+              "--auto-approve",
             },
             env = {
               CLINE_PROVIDER = "openai-compatible",
